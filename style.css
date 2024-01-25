@@ -1,0 +1,96 @@
+/* Footer class */
+.footer{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Top menu */
+ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    background-color: #333;
+}
+  
+li{
+    float: left;
+}
+  
+li a{
+    display: block;
+    color: white;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+  
+/* Change the link color to #111 (black) on hover */
+li a:hover{
+    background-color: #04AA6D;
+}
+  
+/*.active{
+    background-color: #04AA6D;
+}*/
+
+/* Left hand side table */
+#info_panel{
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 25%;
+    float: left;
+}
+  
+#info_panel td, #info_panel th{
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+  
+#info_panel tr:nth-child(even){background-color: #f2f2f2;}
+  
+#info_panel tr:hover {background-color: #ddd;}
+  
+#info_panel th{
+    padding-top: 5;
+    padding-bottom: 5px;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+}
+
+/* Last heard table */
+#lastheard{
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 70%;
+    float: right;
+}
+  
+#lastheard td, #lastheard th{
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+  
+#lastheard tr:nth-child(even){background-color: #f2f2f2;}
+  
+#lastheard tr:hover {background-color: #ddd;}
+  
+#lastheard th{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+}
