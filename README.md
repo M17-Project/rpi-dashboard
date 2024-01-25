@@ -1,2 +1,2 @@
 # rpi-dashboard
-Dashboard for the rpi-interface
+Dashboard for the rpi-interface.
