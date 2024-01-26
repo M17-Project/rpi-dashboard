@@ -14,6 +14,8 @@ header("Pragma: no-cache");
 <ul>
   <li><a class="active" href="index.php">Dashboard</a></li>
   <li><a href="clear.php">Clear</a></li>
+  <li><a href="reboot.php">Reboot</a></li>
+  <li><a href="shutdown.php">Shutdown</a></li>
   <li><a href="https://m17project.org" target=”_blank”>About</a></li>
   <li><a href="https://opencollective.com/m17-project/donate" target=”_blank”>Donate</a></li>
 </ul>
