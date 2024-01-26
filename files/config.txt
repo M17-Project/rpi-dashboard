@@ -1,8 +1,9 @@
 #Main settings
-device="/dev/ttyS0" #UART port to use
-speed=460800        #UART's speed
-name="N0CALL H"     #callsign with a suffix
-module="Z"          #single letter
+log_path="/var/www/html/files/log.txt"  #log file for the dashboard
+device="/dev/ttyS0"                     #UART port to use
+speed=460800                            #UART's speed
+name="N0CALL H"                         #callsign with a suffix
+module="Z"                              #single letter
 
 #RF settings
 tx_freq=435000000   #Hz
