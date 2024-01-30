@@ -12,7 +12,12 @@ header("Pragma: no-cache");
 </head>
 <body>
 <ul>
-  <li><a class="active" href="index.php">Dashboard</a></li>
+  <?php
+  if(strlen($_GET['cfg'])>0)
+	echo '<li><a class="active" href="index.php?cfg='.$_GET['cfg'].'">Dashboard</a></li>';
+  else
+	echo '<li><a class="active" href="index.php">Dashboard</a></li>';
+  ?>
   <li><a href="clear.php">Clear</a></li>
   <li><a href="reboot.php">Reboot</a></li>
   <li><a href="shutdown.php">Shutdown</a></li>
@@ -44,7 +49,12 @@ $brate='460800';
 $name='unknown';
 $module='unknown';
 
-$fp = fopen("files/config.txt", "r");
+if(strlen($_GET['cfg'])>0)
+	$cfg_path='files/'.$_GET['cfg'].'.txt';
+else
+	$cfg_path='files/default_cfg.txt';
+$fp = fopen($cfg_path, "r");
+
 if($fp)
 {
     while(!feof($fp))
