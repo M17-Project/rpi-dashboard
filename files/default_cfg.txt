@@ -3,6 +3,7 @@ log_path="/var/www/html/files/log.txt"  #log file for the dashboard
 device="/dev/ttyAMA0"                   #UART port to use
 speed=460800                            #UART's speed
 name="N0CALL H"                         #callsign with a suffix
+reflector="M17-M17"                     #reflector
 module="A"                              #single letter
 nrst=17                                 #nRST pin
 pa_en=18                                #PA enable pin
