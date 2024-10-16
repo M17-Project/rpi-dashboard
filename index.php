@@ -7,7 +7,7 @@ header("Pragma: no-cache");
 ?>
 <head>
   <link rel="stylesheet" href="style.css">
-  <title>RRU Dashboard</title>
+  <title>Dashboard</title>
   <link rel="icon" type="image/x-icon" href="img/favicon.png">
 </head>
 <body>
@@ -69,10 +69,14 @@ if($fp)
         {
             $brate=get_string_between($line, "=", " ");
         }
-        else if(strstr($line, "name"))
+        else if(strstr($line, "node"))
         {
-            $name=get_string_between($line, "\"", "\"");
+            $node=get_string_between($line, "\"", "\"");
         }
+        else if(strstr($line, "reflector"))
+        {
+            $refl=get_string_between($line, "\"", "\"");
+        }		
         else if(strstr($line, "module"))
         {
             $module=get_string_between($line, "\"", "\"");
@@ -143,7 +147,11 @@ echo '<td>'.$brate.'</td>';
 echo '</tr>';
 echo '<tr>';
 echo '<td>Callsign (ID)</td>';
-echo '<td>'.$name.'</td>';
+echo '<td>'.$node.'</td>';
+echo '</tr>';
+echo '<tr>';
+echo '<td>Reflector</td>';
+echo '<td>'.$refl.'</td>';
 echo '</tr>';
 echo '<tr>';
 echo '<td>Module</td>';
@@ -164,7 +172,7 @@ echo '</table>';
 </table>
 
 <div class="footer">
-  <p>SP5WWP's Remote Radio Unit Dashboard<br>M17 Project</p>
+  <p>SP5WWP's Dashboard<br>M17 Project</p>
 </div>
 
 <script src="script.js"></script> 
