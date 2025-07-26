@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
-<?php include 'header.php';?>
-<br><br><br>
-
 <?php
+include 'header.php';
+
+$configFile = 'config.php';
+$config = include $configFile;
+
 function get_string_between($string, $start, $end)
 {
     $string = ' ' . $string;
@@ -25,11 +27,15 @@ $brate='460800';
 $name='unknown';
 $module='unknown';
 
+/**
 if(strlen($_GET['cfg'])>0)
 	$cfg_path='files/'.$_GET['cfg'].'.txt';
 else
 	$cfg_path='files/default_cfg.txt';
 $fp = fopen($cfg_path, "r");
+**/
+
+$fp = fopen($config['gateway_config_file'], "r"); 
 
 if($fp)
 {
@@ -147,10 +153,12 @@ echo '</table>';
   </tr>
 </table>
 
-<div class="footer">
-  <p>SP5WWP's Dashboard<br>M17 Project</p>
-</div>
+<?php include 'footer.php';?>
 
+<script>
+    // Pass dashboard log file to JavaScript
+    const foo = <?php echo json_encode($config['gateway_log_file']); ?>;
+</script>
 <script src="script.js"></script> 
 </body>
 </html>

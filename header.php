@@ -9,6 +9,7 @@ header("Pragma: no-cache");
   <link rel="icon" type="image/x-icon" href="img/favicon.png">
 </head>
 <body>
+<div class="header">
 <ul>
   <?php
   if(strlen($_GET['cfg'])>0)
@@ -16,11 +17,10 @@ header("Pragma: no-cache");
   else
 	echo '<li><a class="active" href="index.php">Dashboard</a></li>';
   ?>
-  <li><a href="config.php">Config</a></li>
-  <li><a href="clear.php">Clear</a></li>
-  <li><a href="reboot.php">Reboot</a></li>
-  <li><a href="shutdown.php">Shutdown</a></li>
+  <li><a href="gateway_config.php">Gateway Config</a></li>
+  <li><a href="admin.php">Admin</a></li>
   <li><a href="https://m17project.org" target=”_blank”>About</a></li>
   <li><a href="https://www.paypal.com/donate/?hosted_button_id=4HTHZCS8UYPU6" target=”_blank”>Donate</a></li>
 </ul>
-
+</div>
+<div id="main">

@@ -1,0 +1,29 @@
+{"time":"2025-07-25T16:57:23.963547017+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T16:57:25.281644438+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T17:05:14.891755166+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T17:05:16.481843231+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T17:19:28.871828071+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T17:19:33.103443052+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:16:32.285102802+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:16:34.76734145+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:16:41.276571045+02:00","type":"RF","subtype":"Voice Start","src":"DK1MI","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:35:43.070088606+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:35:47.344512129+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:35:52.570911432+02:00","type":"RF","subtype":"Voice Start","src":"DK1MI","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:36:48.036969073+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:36:49.119179305+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:36:50.179744935+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:36:53.520422191+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:36:55.460743278+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:36:57.593041401+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:36:58.755716222+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:37:01.072630201+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:37:03.040185804+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:37:05.098735942+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:37:06.54971927+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:37:09.18446374+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:37:10.602064708+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:37:12.765434542+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:43:52.883951118+02:00","type":"RF","subtype":"Voice Start","src":"DK1MI","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:43:59.961643218+02:00","type":"Internet","subtype":"Voice Start","src":"DK1MI   D","dst":"@ALL","can":0}
+{"time":"2025-07-25T18:44:02.317325995+02:00","type":"Internet","subtype":"Voice End","src":"DK1MI   D","dst":"@ALL","can":0}
