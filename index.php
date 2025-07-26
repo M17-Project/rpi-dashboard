@@ -16,7 +16,7 @@ function get_string_between($string, $start, $end)
     return substr($string, $ini, $len);
 }
 
-//defaults
+// set defaults in case we don't have the data at hand
 $uart='unknown';
 $rxf='unknown';
 $rxf='unknown';
@@ -27,71 +27,55 @@ $brate='460800';
 $name='unknown';
 $module='unknown';
 
-/**
-if(strlen($_GET['cfg'])>0)
-	$cfg_path='files/'.$_GET['cfg'].'.txt';
-else
-	$cfg_path='files/default_cfg.txt';
-$fp = fopen($cfg_path, "r");
-**/
+// Read the gateway config file
+$gateway_config = parse_ini_file($config['gateway_config_file'], true);
 
-$fp = fopen($config['gateway_config_file'], "r"); 
-
-if($fp)
-{
-    while(!feof($fp))
-    {
-        $line=fgets($fp, 4096);
-
-        if(strstr($line, "device"))
-        {
-            $uart=get_string_between($line, "\"", "\"");
-        }
-        else if(strstr($line, "speed"))
-        {
-            $brate=get_string_between($line, "=", " ");
-        }
-        else if(strstr($line, "node"))
-        {
-            $node=get_string_between($line, "\"", "\"");
-        }
-        else if(strstr($line, "reflector"))
-        {
-            $refl=get_string_between($line, "\"", "\"");
-        }		
-        else if(strstr($line, "module"))
-        {
-            $module=get_string_between($line, "\"", "\"");
-        }
-        else if(strstr($line, "rx_freq"))
-        {
-            $rxf=get_string_between($line, "=", " ");
-        }
-        else if(strstr($line, "tx_freq"))
-        {
-            $txf=get_string_between($line, "=", " ");
-        }
-        else if(strstr($line, "tx_pwr"))
-        {
-            $txp=get_string_between($line, "=", " ");
-        }
-        else if(strstr($line, "freq_corr"))
-        {
-            $fcorr=get_string_between($line, "=", " ");
-        }
-        else if(strstr($line, "afc"))
-        {
-            $afc=get_string_between($line, "=", " ");
-            if($afc=='1')
-                $afc='enabled';
-            else
-                $afc='disabled';
-        }
+// populate all variables for the device info and interface info panel
+// with the values from the gateway config file
+if (isset($gateway_config['Radio'])) {
+    $radio = $gateway_config['Radio'];
+    if (isset($radio['RXFrequency'])) {
+        $rxf=$radio['RXFrequency'];
     }
-
-    fclose($fp);
+    if (isset($radio['TXFrequency'])) {
+        $txf=$radio['TXFrequency'];
+    }
+    if (isset($radio['Power'])) {
+        $txp=$radio['Power'];
+    }
+    if (isset($radio['FrequencyCorr'])) {
+        $fcorr=$radio['FrequencyCorr'];
+    }
+    if (isset($radio['AFC'])) {
+        $afc=$radio['AFC'];
+    }
+}
+if (isset($gateway_config['Modem'])) {
+    $modem = $gateway_config['Modem'];
+    if (isset($modem['Speed'])) {
+        $brate=$modem['Speed'];
+    }
+    if (isset($modem['Port'])) {
+        $uart=$modem['Port'];
+    }
+}
+if (isset($gateway_config['General'])) {
+    $general = $gateway_config['General'];
+    if (isset($general['Callsign'])) {
+        $node=$general['Callsign'];
+    }
+}
+if (isset($gateway_config['Reflector'])) {
+    $reflector = $gateway_config['Reflector'];
+    if (isset($reflector['Name'])) {
+        $refl=$reflector['Name'];
+    }
+    if (isset($reflector['Module'])) {
+        $module=$reflector['Module'];
+    }
 }
 
+// Build the left table on the dashboard
 echo '<table id="info_panel">';
 echo '<tr>';
 echo '<th colspan="2">Device info</th>';
