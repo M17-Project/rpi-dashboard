@@ -1,6 +1,6 @@
 <?php
 $configFile = 'testdata/config.ini';
-$hostsFile = 'testdata/M17Hosts.txt';
+$hostsFile = 'hostfiles/M17Hosts.txt';
 
 // Load config
 $config = parse_ini_file($configFile, true);
