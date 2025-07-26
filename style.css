@@ -94,3 +94,6 @@ li a:hover{
     background-color: #04AA6D;
     color: white;
 }
+
+body { padding: 20px; }
+.message { background: #04AA6D; color: white; border: 1px solid green; padding: 10px; margin-bottom: 15px; }
