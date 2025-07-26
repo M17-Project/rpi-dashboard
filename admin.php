@@ -66,8 +66,8 @@ PHP;
 
 <?php if (!empty($message)) echo "<div class='message'>$message</div>"; ?>
 
-<table><tr><td>
-
+<div class="config-panel-container">
+<div class="config-panel-wrapper">
 
 <form method="post">
     <table id="config_panel">
@@ -92,12 +92,10 @@ PHP;
     </tr>
     </table>
 </form>
+</div>
 
-</td></tr>
-<tr><td>...</td></tr>
 
-<tr><td>
-
+<div class="config-panel-wrapper">
 <form method="post" style="display: flex; gap: 10px; flex-wrap: wrap;">
     <table id="config_panel">
     <tr>
@@ -117,8 +115,8 @@ PHP;
     </tr>
     </table>
 </form>
-</td></tr>
-</table>
+</div>
+</div>
 
 <?php if (!empty($commandOutput)): ?>
     <h3>Command Output:</h3>
