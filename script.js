@@ -11,6 +11,21 @@ function load_file(file_path)
     return result;
 }
 
+function escapeHtml(text) {
+  if (typeof text === 'string' || text instanceof String) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  } else {
+    return text;
+  }
+}
+
 function data_append() {
     var contents = load_file(gateway_log_file);
     var lines = contents.trim().split(/\r\n|\r|\n/);
@@ -34,12 +49,12 @@ function data_append() {
                 var cell5 = row.insertCell(4);
                 var cell6 = row.insertCell(5);
 
-                cell1.innerHTML = formatTime(entry.time) || "";
-                cell2.innerHTML = entry.src || "";
-                cell3.innerHTML = entry.dst || "";
-                cell4.innerHTML = entry.type || "";
-                cell5.innerHTML = entry.can !== undefined ? entry.can : "";
-                cell6.innerHTML = ""; // MER not there yet
+                cell1.innerHTML = escapeHtml(formatTime(entry.time)) || "";
+                cell2.innerHTML = escapeHtml(entry.src) || "";
+                cell3.innerHTML = escapeHtml(entry.dst) || "";
+                cell4.innerHTML = escapeHtml(entry.type) || "";
+                cell5.innerHTML = escapeHtml(entry.can) !== undefined ? entry.can : "";
+                cell6.innerHTML = escapeHtml(""); // MER not there yet
 
 		while (table.rows.length > 16 ) { 
                     table.deleteRow(table.rows.length - 1);

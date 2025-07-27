@@ -44,11 +44,20 @@ PHP;
             case 'status':
                 $command = 'systemctl status m17-gateway.service';
                 break;
-            case 'processes':
-                $command = 'ps aux';
+            case 'start':
+                $command = 'systemctl start m17-gateway.service';
                 break;
-            case 'pwd':
-                $command = 'pwd';
+            case 'stop':
+                $command = 'systemctl stop m17-gateway.service';
+                break;
+            case 'restart':
+                $command = 'systemctl restart m17-gateway.service';
+                break;
+            case 'uptime':
+                $command = 'uptime';
+                break;
+            case 'log':
+                $command = 'tail -n 30 '.htmlspecialchars($config['gateway_log_file']);
                 break;
             default:
                 $command = '';
@@ -102,16 +111,19 @@ PHP;
         <th colspan="2">Execute Commands</th>
     </tr>
     <tr>
-        <td>test 1</td>
-        <td><button type="submit" name="run_command" value="status">M17 Gateway Status</button></td>
+        <td>M17 Gateway Control</td>
+        <td><button type="submit" name="run_command" value="status">Status</button>
+        <button type="submit" name="run_command" value="start">Sart</button>
+        <button type="submit" name="run_command" value="stop">Stop</button>
+        <button type="submit" name="run_command" value="restart">Restart</button></td>
     </tr>
     <tr>
-        <td>test 2</td>
-        <td><button type="submit" name="run_command" value="processes">Show Running Processes</button></td>
+        <td>M17 Gateway Log</td>
+        <td><button type="submit" name="run_command" value="log">Show Log</button></td>
     </tr>
     <tr>
-        <td>test 3</td>
-        <td><button type="submit" name="run_command" value="pwd">Show Current Directory</button></td>
+        <td>System Uptime</td>
+        <td><button type="submit" name="run_command" value="uptime">System Uptime</button></td>
     </tr>
     </table>
 </form>
