@@ -12,8 +12,7 @@ function load_file(file_path)
 }
 
 function data_append() {
-    //var contents = load_file("files/dashboard.log");
-    var contents = load_file(foo);
+    var contents = load_file(gateway_log_file);
     var lines = contents.trim().split(/\r\n|\r|\n/);
     var linescount = lines.length;
 
