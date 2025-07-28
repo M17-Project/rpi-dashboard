@@ -60,6 +60,8 @@ echo '</tr>';
 echo '</table>';
 ?>
 
+<div id="live-indicator" style="margin: 10px 0; font-weight: bold; color: green;"></div>
+
 <table id="lastheard">
   <tr>
     <th>Time</th>
@@ -68,6 +70,7 @@ echo '</table>';
     <th>Interface</th>
     <th>CAN</th>
     <th>MER</th>
+    <th>Duration</th>
   </tr>
 </table>
 
