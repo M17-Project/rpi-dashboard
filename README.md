@@ -1,6 +1,6 @@
 # rpi-dashboard
 
-![preview](screenshot.jpg)
+![preview](/screenshot.jpg)
 
 A lightweight web-based dashboard for managing and monitoring an **M17 hotspot** based on a **CC1200 HAT**, running on a Raspberry Pi.  
 It pairs with the `m17-gateway` backend to provide real‑time status, logs, and control over the M17 hotspot.
