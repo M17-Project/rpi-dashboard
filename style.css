@@ -10,6 +10,18 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.header{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    line-height: 25px;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 /* Top menu */
 ul{
     list-style-type: none;
@@ -70,6 +82,43 @@ li a:hover{
     color: white;
 }
 
+/* Config item table */
+#config_panel{
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 800px;
+}
+
+#config_panel td, #config_panel th{
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+
+#config_panel tr:nth-child(even){background-color: #f2f2f2;}
+
+#config_panel tr:hover {background-color: #ddd;}
+
+#config_panel th{
+    padding-top: 5;
+    padding-bottom: 5px;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+}
+
+
+.config-panel-container {
+    width: 100%; /* or a fixed width if needed */
+}
+
+.config-panel-wrapper {
+    margin-bottom: 20px; /* space between the two tables */
+}
+
+input[type="text"] {
+    width: 300px;
+}
+
 /* Last heard table */
 #lastheard{
     font-family: Arial, Helvetica, sans-serif;
@@ -94,3 +143,12 @@ li a:hover{
     background-color: #04AA6D;
     color: white;
 }
+
+.message { background: #04AA6D; color: white; border: 1px solid green; padding: 10px; margin-bottom: 15px; }
+
+#main {
+    padding-bottom: 70px; /* don't show stuff under the footer div */
+    padding-top: 70px; /* don't show stuff under the header div */
+    overflow: auto;
+}
+

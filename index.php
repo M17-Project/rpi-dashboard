@@ -1,161 +1,64 @@
 <!DOCTYPE html>
 <html>
-<?php
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-?>
-<head>
-  <link rel="stylesheet" href="style.css">
-  <title>Dashboard</title>
-  <link rel="icon" type="image/x-icon" href="img/favicon.png">
-</head>
-<body>
-<ul>
-  <?php
-  if(strlen($_GET['cfg'])>0)
-	echo '<li><a class="active" href="index.php?cfg='.$_GET['cfg'].'">Dashboard</a></li>';
-  else
-	echo '<li><a class="active" href="index.php">Dashboard</a></li>';
-  ?>
-  <li><a href="clear.php">Clear</a></li>
-  <li><a href="reboot.php">Reboot</a></li>
-  <li><a href="shutdown.php">Shutdown</a></li>
-  <li><a href="https://m17project.org" target=”_blank”>About</a></li>
-  <li><a href="https://opencollective.com/m17-project/donate" target=”_blank”>Donate</a></li>
-</ul>
-
-<br><br><br>
+<script src="jquery-3.6.0.min.js"></script>
+<script src="script.js"></script>
 
 <?php
-function get_string_between($string, $start, $end)
-{
-    $string = ' ' . $string;
-    $ini = strpos($string, $start);
-    if ($ini == 0) return '';
-    $ini += strlen($start);
-    $len = strpos($string, $end, $ini) - $ini;
-    return substr($string, $ini, $len);
-}
 
-//defaults
-$uart='unknown';
-$rxf='unknown';
-$rxf='unknown';
-$txp='unknown';
-$fcorr='unknown';
-$afc='unknown';
-$brate='460800';
-$name='unknown';
-$module='unknown';
+include 'header.php';
+$configFile = 'config.php';
+$config = include $configFile;
 
-if(strlen($_GET['cfg'])>0)
-	$cfg_path='files/'.$_GET['cfg'].'.txt';
-else
-	$cfg_path='files/default_cfg.txt';
-$fp = fopen($cfg_path, "r");
+// Read the gateway config file
+$gateway_config = parse_ini_file($config['gateway_config_file'], true);
 
-if($fp)
-{
-    while(!feof($fp))
-    {
-        $line=fgets($fp, 4096);
-
-        if(strstr($line, "device"))
-        {
-            $uart=get_string_between($line, "\"", "\"");
-        }
-        else if(strstr($line, "speed"))
-        {
-            $brate=get_string_between($line, "=", " ");
-        }
-        else if(strstr($line, "node"))
-        {
-            $node=get_string_between($line, "\"", "\"");
-        }
-        else if(strstr($line, "reflector"))
-        {
-            $refl=get_string_between($line, "\"", "\"");
-        }		
-        else if(strstr($line, "module"))
-        {
-            $module=get_string_between($line, "\"", "\"");
-        }
-        else if(strstr($line, "rx_freq"))
-        {
-            $rxf=get_string_between($line, "=", " ");
-        }
-        else if(strstr($line, "tx_freq"))
-        {
-            $txf=get_string_between($line, "=", " ");
-        }
-        else if(strstr($line, "tx_pwr"))
-        {
-            $txp=get_string_between($line, "=", " ");
-        }
-        else if(strstr($line, "freq_corr"))
-        {
-            $fcorr=get_string_between($line, "=", " ");
-        }
-        else if(strstr($line, "afc"))
-        {
-            $afc=get_string_between($line, "=", " ");
-            if($afc=='1')
-                $afc='enabled';
-            else
-                $afc='disabled';
-        }
-    }
-
-    fclose($fp);
-}
-
+// Build the left table on the dashboard
 echo '<table id="info_panel">';
 echo '<tr>';
-echo '<th colspan="2">Device info</th>';
+echo '  <th colspan="2">Device info</th>';
 echo '</tr>';
 echo '<tr>';
-echo '<td>RX frequency</td>';
-echo '<td>'.$rxf.' Hz</td>';
+echo '  <td>RX frequency</td>';
+echo '  <td>'.htmlspecialchars($gateway_config['Radio']['RXFrequency']).' Hz</td>';
 echo '</tr>';
 echo '<tr>';
-echo '<td>TX frequency</td>';
-echo '<td>'.$txf.' Hz</td>';
+echo '  <td>TX frequency</td>';
+echo '  <td>'.htmlspecialchars($gateway_config['Radio']['TXFrequency']).' Hz</td>';
 echo '</tr>';
 echo '<tr>';
-echo '<td>TX power</td>';
-echo '<td>'.$txp.' dBm</td>';
+echo '  <td>TX power</td>';
+echo '  <td>'.htmlspecialchars($gateway_config['Radio']['Power']).' dBm</td>';
 echo '</tr>';
 echo '<tr>';
-echo '<td>Freq. correction</td>';
-echo '<td>'.$fcorr.'</td>';
+echo '  <td>Freq. correction</td>';
+echo '  <td>'.htmlspecialchars($gateway_config['Radio']['FrequencyCorr']).'</td>';
 echo '</tr>';
 echo '<tr>';
-echo '<td>AFC</td>';
-echo '<td>'.$afc.'</td>';
+echo '  <td>AFC</td>';
+echo '  <td>'.htmlspecialchars($gateway_config['Radio']['AFC']).'</td>';
 echo '</tr>';
 echo '<tr>';
-echo '<th colspan="2">Interface info</th>';
+echo '  <th colspan="2">Interface info</th>';
+echo '  </tr>';
+echo '<tr>';
+echo '  <td>Device</td>';
+echo '  <td>'.htmlspecialchars($gateway_config['Modem']['Port']).'</td>';
 echo '</tr>';
 echo '<tr>';
-echo '<td>Device</td>';
-echo '<td>'.$uart.'</td>';
+echo '  <td>Baudrate</td>';
+echo '  <td>'.htmlspecialchars($gateway_config['Modem']['Speed']).'</td>';
 echo '</tr>';
 echo '<tr>';
-echo '<td>Baudrate</td>';
-echo '<td>'.$brate.'</td>';
+echo '  <td>Callsign (ID)</td>';
+echo '  <td>'.htmlspecialchars($gateway_config['General']['Callsign']).'</td>';
 echo '</tr>';
 echo '<tr>';
-echo '<td>Callsign (ID)</td>';
-echo '<td>'.$node.'</td>';
+echo '  <td>Reflector</td>';
+echo '  <td>'.htmlspecialchars($gateway_config['Reflector']['Name']).'</td>';
 echo '</tr>';
 echo '<tr>';
-echo '<td>Reflector</td>';
-echo '<td>'.$refl.'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '<td>Module</td>';
-echo '<td>'.$module.'</td>';
+echo '  <td>Module</td>';
+echo '  <td>'.htmlspecialchars($gateway_config['Reflector']['Module']).'</td>';
 echo '</tr>';
 echo '</table>';
 ?>
@@ -168,13 +71,11 @@ echo '</table>';
     <th>Interface</th>
     <th>CAN</th>
     <th>MER</th>
+    <th>Duration</th>
   </tr>
 </table>
 
-<div class="footer">
-  <p>SP5WWP's Dashboard<br>M17 Project</p>
-</div>
+<?php include 'footer.php';?>
 
-<script src="script.js"></script> 
 </body>
 </html>
