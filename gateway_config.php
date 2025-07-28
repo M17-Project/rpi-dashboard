@@ -112,7 +112,7 @@ foreach ($lines as $line) {
 		</tr>
         <?php endforeach; ?>
 	    <tr>
-	    <th colspan="2"><button type="submit" name="save">Save</button> &nbsp; &nbsp; <button type="submit" name="save_restart">Save and Restart</button></th>
+	    <th colspan="2"><button type="submit" name="save">Save Config</button> &nbsp; &nbsp; <button type="submit" name="save_restart">Restart Gateway</button></th>
 	    </tr>
 	</table>
     </form>
