@@ -11,12 +11,7 @@ header("Pragma: no-cache");
 <body>
 <div class="header">
 <ul>
-  <?php
-  if(strlen($_GET['cfg'])>0)
-	echo '<li><a class="active" href="index.php?cfg='.$_GET['cfg'].'">Dashboard</a></li>';
-  else
-	echo '<li><a class="active" href="index.php">Dashboard</a></li>';
-  ?>
+  <li><a class="active" href="index.php">Dashboard</a></li>
   <li><a href="gateway_config.php">Gateway Config</a></li>
   <li><a href="admin.php">Admin</a></li>
   <li><a href="https://m17project.org" target=”_blank”>About</a></li>

@@ -54,7 +54,7 @@ function data_append() {
                 cell3.innerHTML = escapeHtml(entry.dst) || "";
                 cell4.innerHTML = escapeHtml(entry.type) || "";
                 cell5.innerHTML = escapeHtml(entry.can) !== undefined ? entry.can : "";
-                cell6.innerHTML = escapeHtml(""); // MER not there yet
+                cell6.innerHTML = escapeHtml(entry.mer.toFixed(2) || "");
 
 		while (table.rows.length > 16 ) { 
                     table.deleteRow(table.rows.length - 1);
@@ -63,7 +63,6 @@ function data_append() {
                 console.error("Parse error in line: ", lines[i], e);
             }
         }
-
         prev_linescount = linescount;
     }
 

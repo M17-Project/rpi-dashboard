@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Restart if requested
     if (isset($_POST['save_restart'])) {
-        exec("sudo systemctl restart m17-gateway");
+        exec("systemctl restart m17-gateway");
         $message = "Saved and restarted m17-gateway.";
     } else {
         $message = "Configuration saved.";
