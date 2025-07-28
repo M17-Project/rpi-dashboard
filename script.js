@@ -115,6 +115,7 @@ function addEntriesToStorage(newLines) {
     }
 
     saveStoredEntries(storedEntries);
+    //populateTableFromStorage();
 }
 
 function populateTableFromStorage() {
@@ -186,16 +187,11 @@ function monitorLogFile() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Add "Duration" header if not present
-    const table = document.getElementById("lastheard");
-    if (table && table.rows.length > 0 && table.rows[0].cells.length === 6) {
-        table.rows[0].insertCell(6).innerHTML = "Duration";
-    }
 
     // Load any existing stored entries into the table on startup
     populateTableFromStorage();
 
     // Start monitoring
-    setTimeout(monitorLogFile, 10);
+    setTimeout(monitorLogFile, 1000);
 });
 
