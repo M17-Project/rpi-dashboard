@@ -114,14 +114,14 @@ PHP;
         <th colspan="2">Execute Commands</th>
     </tr>
     <tr>
-        <td>M17 Gateway Control</td>
+        <td>M17 Gateway Service</td>
         <td><button type="submit" name="run_command" value="status">Status</button>
         <button type="submit" name="run_command" value="start">Sart</button>
         <button type="submit" name="run_command" value="stop">Stop</button>
         <button type="submit" name="run_command" value="restart">Restart</button></td>
     </tr>
     <tr>
-        <td>M17 Gateway Log</td>
+        <td>M17 Gateway Raw Log</td>
         <td><button type="submit" name="run_command" value="log">Show Log</button></td>
     </tr>
     <tr>
