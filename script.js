@@ -1,6 +1,3 @@
-var prev_linescount = 0;
-var bufferedEntry = null;
-
 function load_file(file_path)
 {
     var result = null;
@@ -59,7 +56,7 @@ function calculateDuration(start, end) {
 function data_append() {
     var contents = load_file(gateway_log_file);
     if (!contents) return;
-
+    
     var lines = contents.trim().split(/\r\n|\r|\n/);
     var linescount = lines.length;
 
@@ -69,90 +66,42 @@ function data_append() {
 
     if (linescount > prev_linescount) {
         var table = document.getElementById("lastheard");
-        var newLines = lines.slice(prev_linescount);
 
-        var i = 0;
-
-        // If there's a buffered entry, try to pair it with the first new line
-        if (bufferedEntry && newLines.length > 0) {
+        for (var i = prev_linescount; i < linescount; i++) {
             try {
-                var nextEntry = JSON.parse(newLines[0]);
-                var isVoicePair = bufferedEntry.src === nextEntry.src &&
-                                  bufferedEntry.subtype === "Voice Start" &&
-                                  nextEntry.subtype === "Voice End";
-
-                if (isVoicePair) {
-                    var row = table.insertRow(1);
-                    row.insertCell(0).innerHTML = escapeHtml(formatTime(bufferedEntry.time)) || "";
-                    row.insertCell(1).innerHTML = escapeHtml(bufferedEntry.src) || "";
-                    row.insertCell(2).innerHTML = escapeHtml(bufferedEntry.dst) || "";
-                    row.insertCell(3).innerHTML = escapeHtml(bufferedEntry.type) || "";
-                    row.insertCell(4).innerHTML = escapeHtml(bufferedEntry.can) !== undefined ? bufferedEntry.can : "";
-                    row.insertCell(5).innerHTML = escapeHtml(bufferedEntry.mer !== undefined ? bufferedEntry.mer.toFixed(2) : "");
-                    row.insertCell(6).innerHTML = calculateDuration(bufferedEntry.time, nextEntry.time);
-
-                    i = 1; // skip the next line (already used)
-                    bufferedEntry = null;
-                } else {
-                    // Couldn't pair, just render it and continue
-                    var row = table.insertRow(1);
-                    row.insertCell(0).innerHTML = escapeHtml(formatTime(bufferedEntry.time)) || "";
-                    row.insertCell(1).innerHTML = escapeHtml(bufferedEntry.src) || "";
-                    row.insertCell(2).innerHTML = escapeHtml(bufferedEntry.dst) || "";
-                    row.insertCell(3).innerHTML = escapeHtml(bufferedEntry.type) || "";
-                    row.insertCell(4).innerHTML = escapeHtml(bufferedEntry.can) !== undefined ? bufferedEntry.can : "";
-                    row.insertCell(5).innerHTML = escapeHtml(bufferedEntry.mer !== undefined ? bufferedEntry.mer.toFixed(2) : "");
-                    row.insertCell(6).innerHTML = "";
-                    bufferedEntry = null;
-                }
-            } catch (e) {
-                console.error("Error parsing buffered pair: ", newLines[0], e);
-                bufferedEntry = null;
-            }
-        }
-
-        // Process the rest of the new lines
-        for (; i < newLines.length; i++) {
-            try {
-                var entry = JSON.parse(newLines[i]);
-                var nextEntry = (i + 1 < newLines.length) ? JSON.parse(newLines[i + 1]) : null;
-
+                var entry = JSON.parse(lines[i]);
+                var nextEntry = (i + 1 < linescount) ? JSON.parse(lines[i + 1]) : null;
                 var isVoicePair = nextEntry &&
                                   entry.src === nextEntry.src &&
                                   entry.subtype === "Voice Start" &&
                                   nextEntry.subtype === "Voice End";
 
-                if (isVoicePair) {
-                    var row = table.insertRow(1);
-                    row.insertCell(0).innerHTML = escapeHtml(formatTime(entry.time)) || "";
-                    row.insertCell(1).innerHTML = escapeHtml(entry.src) || "";
-                    row.insertCell(2).innerHTML = escapeHtml(entry.dst) || "";
-                    row.insertCell(3).innerHTML = escapeHtml(entry.type) || "";
-                    row.insertCell(4).innerHTML = escapeHtml(entry.can) !== undefined ? entry.can : "";
-                    row.insertCell(5).innerHTML = escapeHtml(entry.mer !== undefined ? entry.mer.toFixed(2) : "");
-                    row.insertCell(6).innerHTML = calculateDuration(entry.time, nextEntry.time);
+                var row = table.insertRow(1);
+                var cell1 = row.insertCell(0); // time
+                var cell2 = row.insertCell(1); // src
+                var cell3 = row.insertCell(2); // dst
+                var cell4 = row.insertCell(3); // type
+                var cell5 = row.insertCell(4); // can
+                var cell6 = row.insertCell(5); // mer
+                var cell7 = row.insertCell(6); // duration
 
-                    i++; // skip the next line
-                } else if (entry.subtype === "Voice Start") {
-                    // Buffer for next round
-                    bufferedEntry = entry;
-                } else {
-                    var row = table.insertRow(1);
-                    row.insertCell(0).innerHTML = escapeHtml(formatTime(entry.time)) || "";
-                    row.insertCell(1).innerHTML = escapeHtml(entry.src) || "";
-                    row.insertCell(2).innerHTML = escapeHtml(entry.dst) || "";
-                    row.insertCell(3).innerHTML = escapeHtml(entry.type) || "";
-                    row.insertCell(4).innerHTML = escapeHtml(entry.can) !== undefined ? entry.can : "";
-                    row.insertCell(5).innerHTML = escapeHtml(entry.mer !== undefined ? entry.mer.toFixed(2) : "");
-                    row.insertCell(6).innerHTML = "";
+                cell1.innerHTML = escapeHtml(formatTime(entry.time)) || "";
+                cell2.innerHTML = escapeHtml(entry.src) || "";
+                cell3.innerHTML = escapeHtml(entry.dst) || "";
+                cell4.innerHTML = escapeHtml(entry.type) || "";
+                cell5.innerHTML = escapeHtml(entry.can) !== undefined ? entry.can : "";
+                cell6.innerHTML = escapeHtml(entry.mer !== undefined ? entry.mer.toFixed(2) : "");
+                cell7.innerHTML = isVoicePair ? calculateDuration(entry.time, nextEntry.time) : "";
+
+                if (isVoicePair) {
+                    i++; // skip the next line since we used it
                 }
 
-                while (table.rows.length > 16) {
+                while (table.rows.length > 16 ) {
                     table.deleteRow(table.rows.length - 1);
                 }
-
             } catch (e) {
-                console.error("Parse error in line: ", newLines[i], e);
+                console.error("Parse error in line: ", lines[i], e);
             }
         }
 
@@ -162,8 +111,7 @@ function data_append() {
     setTimeout(data_append, 1000);
 }
 
-
-// Add "Duration" column header 
+// Add "Duration" column header (you need this if your table header is static HTML)
 document.addEventListener("DOMContentLoaded", function() {
     var table = document.getElementById("lastheard");
     if (table && table.rows.length > 0 && table.rows[0].cells.length === 6) {
@@ -171,5 +119,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+var prev_linescount = 0;
 setTimeout(data_append, 10);
 
