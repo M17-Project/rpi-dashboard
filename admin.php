@@ -9,13 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['save_config'])) {
     $newDashboardLogFile = $_POST['gateway_log_file'] ?? $config['gateway_log_file'];
     $newNodeConfigFile = $_POST['gateway_config_file'] ?? $config['gateway_config_file'];
-    $newHostfile = $_POST['hostfile'] ?? $config['hostfile'];
+    //$newHostfile = $_POST['hostfile'] ?? $config['hostfile'];
     $newMaxLines = $_POST['maxlines'] ?? $config['maxlines'];
 
     // Safely escape input for use in PHP code
     $newDashboardLogFile = addslashes($newDashboardLogFile);
     $newNodeConfigFile = addslashes($newNodeConfigFile);
-    $newHostfile = addslashes($newHostfile);
+    //$newHostfile = addslashes($newHostfile);
     $newMaxLines = addslashes($newMaxLines);
 
     $newConfig = <<<PHP
@@ -23,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 return [
     'gateway_log_file' => '$newDashboardLogFile',
     'gateway_config_file' => '$newNodeConfigFile',
-    'hostfile' => '$newHostfile',
     'maxlines' => '$newMaxLines',
 ];
 PHP;
@@ -45,22 +44,25 @@ PHP;
 
         switch ($selectedCommand) {
             case 'status':
-                $command = 'systemctl status m17-gateway.service';
+                $command = '/usr/bin/systemctl status m17-gateway.service';
                 break;
             case 'start':
-                $command = 'systemctl start m17-gateway.service';
+                $command = '/usr/bin/systemctl start m17-gateway.service';
                 break;
             case 'stop':
-                $command = 'systemctl stop m17-gateway.service';
+                $command = '/usr/bin/systemctl stop m17-gateway.service';
                 break;
             case 'restart':
-                $command = 'systemctl restart m17-gateway.service';
+                $command = '/usr/bin/systemctl restart m17-gateway.service';
                 break;
-            case 'id':
-                $command = 'id';
+            case 'showhostfile':
+                $command = '/usr/bin/cat files/M17Hosts.txt';
+                break;
+            case 'updatehostfile':
+                $command = '/usr/bin/curl https://hostfiles.refcheck.radio/M17Hosts.txt -o files/M17Hosts.txt';
                 break;
             case 'log':
-                $command = 'tail -n 30 '.htmlspecialchars($config['gateway_log_file']);
+                $command = '/usr/bin/tail -n 30 '.htmlspecialchars($config['gateway_log_file']);
                 break;
             default:
                 $command = '';
@@ -98,11 +100,6 @@ PHP;
         <td>Location of the m17-gateway configuration file</td>
     </tr>
     <tr>
-        <td>Hostfile</td>
-        <td><input type="text" id="hostfile" name="hostfile" value="<?= htmlspecialchars($config['hostfile']) ?>" required></td>
-        <td>Location of the hosts file whch contains all the M17 reflectors</td>
-    </tr>
-    <tr>
         <td>Max. Number of Lines</td>
         <td><input type="text" id="maxlines" name="maxlines" value="<?= htmlspecialchars($config['maxlines']) ?>" required></td>
         <td>The maximum number of lines displayed in the "Last Heard" table of the dashboard</td>
@@ -133,8 +130,12 @@ PHP;
         <td><button type="submit" name="run_command" value="log">Show Log</button></td>
     </tr>
     <tr>
-        <td>id</td>
-        <td><button type="submit" name="run_command" value="id">ID</button></td>
+        <td>Show Hostfile</td>
+        <td><button type="submit" name="run_command" value="showhostfile">Show Hostfile</button></td>
+    </tr>
+    <tr>
+        <td>Update Hostfile</td>
+        <td><button type="submit" name="run_command" value="updatehostfile">Update Hostfile</button></td>
     </tr>
     </table>
 </form>
