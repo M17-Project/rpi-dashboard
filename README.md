@@ -60,17 +60,20 @@ server {
 ```bash
 git clone https://github.com/M17-Project/rpi-dashboard.git
 cd rpi-dashboard
+```
 
 Make sure to create symlinks for the files `dashboard.log` and `m17-gateway.ini` as NGINX is unable to access any files outside its document root. The following commands assume that your are using `/opt/m17/rpi-dashboard` as document root.
 
 ```bash
 ln -s /opt/m17/m17-gateway/dashboard.log /opt/m17/rpi-dashboard/files/dashboard.log
 ln -s /etc/m17-gateway.ini /opt/m17/rpi-dashboard/files/m17-gateway.ini
+```
 
 Add the user `www-data` to the group `m17-gateway-control`:
 
 ```bash
 usermod -aG m17-gateway-control www-data
+```
 
 Make sure that the group m17-gateway-control has
 - read and write permissions on /etc/m17-gateway.ini
@@ -95,7 +98,7 @@ $ ls -l /etc/m17-gateway.ini
 
 Now navigate to the admin section of the rpi-dashboard and configure it as following:
 
-M17 Gateway Log File: files/dashboard.log
-M17 Gateway Configuration File: files/m17-gateway.ini
+- M17 Gateway Log File: files/dashboard.log
+- M17 Gateway Configuration File: files/m17-gateway.ini
 
 Also don't forget to update the M17 hosts file via the button in the admin interface.
