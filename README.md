@@ -57,7 +57,10 @@ server {
 }
 ```
 
+Clone the dashboard to /opt/m17/rpi-dashboard:
+
 ```bash
+cd /opt/m17
 git clone https://github.com/M17-Project/rpi-dashboard.git
 cd rpi-dashboard
 ```
