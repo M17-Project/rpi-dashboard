@@ -5,6 +5,7 @@ $configFile = 'config.php';
 $config = include $configFile;
 
 $logFile = $config['gateway_log_file'];
+$maxlines = $config['maxlines'] ?? 20;
 
 $processedEntries = [];
 
@@ -104,8 +105,8 @@ usort($newEntries, function($a, $b) {
     return $b['timestamp'] - $a['timestamp'];
 });
 
-// Limit to 20 entries
-$newEntries = array_slice($newEntries, 0, 20);
+// Limit to configured number of entries
+$newEntries = array_slice($newEntries, 0, $maxlines);
 
 // Remove timestamp from output
 $outputEntries = array_map(function($entry) {

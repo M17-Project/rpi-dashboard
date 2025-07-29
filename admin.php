@@ -10,11 +10,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newDashboardLogFile = $_POST['gateway_log_file'] ?? $config['gateway_log_file'];
     $newNodeConfigFile = $_POST['gateway_config_file'] ?? $config['gateway_config_file'];
     $newHostfile = $_POST['hostfile'] ?? $config['hostfile'];
+    $newMaxLines = $_POST['maxlines'] ?? $config['maxlines'];
 
     // Safely escape input for use in PHP code
     $newDashboardLogFile = addslashes($newDashboardLogFile);
     $newNodeConfigFile = addslashes($newNodeConfigFile);
     $newHostfile = addslashes($newHostfile);
+    $newMaxLines = addslashes($newMaxLines);
 
     $newConfig = <<<PHP
 <?php
@@ -22,6 +24,7 @@ return [
     'gateway_log_file' => '$newDashboardLogFile',
     'gateway_config_file' => '$newNodeConfigFile',
     'hostfile' => '$newHostfile',
+    'maxlines' => '$newMaxLines',
 ];
 PHP;
 
@@ -98,6 +101,11 @@ PHP;
         <td>Hostfile</td>
         <td><input type="text" id="hostfile" name="hostfile" value="<?= htmlspecialchars($config['hostfile']) ?>" required></td>
         <td>Location of the hosts file whch contains all the M17 reflectors</td>
+    </tr>
+    <tr>
+        <td>Max. Number of Lines</td>
+        <td><input type="text" id="maxlines" name="maxlines" value="<?= htmlspecialchars($config['maxlines']) ?>" required></td>
+        <td>The maximum number of lines displayed in the "Last Heard" table of the dashboard</td>
     </tr>
     <tr>
         <th colspan="3"><input name="save_config" type="submit" value="Save Configuration"></th>
