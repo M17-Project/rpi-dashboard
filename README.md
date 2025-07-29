@@ -78,6 +78,8 @@ Add the user `www-data` to the group `m17-gateway-control`:
 usermod -aG m17-gateway-control www-data
 ```
 
+Please note that you will need to restart the Pi for the changes to take effect for the NGINX web server! Otherwise the dashboard will lack the necessary rights to access the required files on the filesystem.
+
 Make sure that the group m17-gateway-control has
 - read and write permissions on /etc/m17-gateway.ini
 - read permissions on /opt/m17/m17-gateway/dashboard.log
