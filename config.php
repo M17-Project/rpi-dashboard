@@ -4,4 +4,5 @@ return [
     'gateway_config_file' => 'files/m17-gateway.ini',
     'hostfile' => 'files/M17Hosts.txt',
     'maxlines' => '15',
+    'timezone' => 'Europe/Berlin',
 ];

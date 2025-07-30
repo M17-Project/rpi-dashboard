@@ -6,6 +6,8 @@ $config = include $configFile;
 
 $logFile = $config['gateway_log_file'];
 $maxlines = $config['maxlines'] ?? 20;
+$timezone = $config['timezone'] ?? 'UTC';
+
 
 $processedEntries = [];
 
@@ -18,6 +20,8 @@ $lines = file($logFile, FILE_IGNORE_NEW_LINES);
 // Temporary storage for voice start entries
 $voiceStarts = [];
 
+date_default_timezone_set($timezone);
+
 foreach ($lines as $line) {
     $entry = json_decode($line, true);
     
@@ -26,6 +30,8 @@ foreach ($lines as $line) {
     
     // Skip if already processed
     $entryHash = md5($line);
+
+    //$dateTime = new DateTime($entry['time'], new DateTimeZone($config['timezone']));
     
     // Safely check for processed entries
     $isProcessed = false;
