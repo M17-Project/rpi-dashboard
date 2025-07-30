@@ -3,7 +3,7 @@ $configFile = 'config.php';
 $config = include $configFile;
 
 // Load config
-$gateway_config = parse_ini_file($config['gateway_config_file'], true);
+$gateway_config = parse_ini_file($config['gateway_config_file'], true, INI_SCANNER_RAW);
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

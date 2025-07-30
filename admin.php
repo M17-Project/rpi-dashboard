@@ -121,7 +121,7 @@ PHP;
     <tr>
         <td>M17 Gateway Service</td>
         <td><button type="submit" name="run_command" value="status">Status</button>
-        <button type="submit" name="run_command" value="start">Sart</button>
+        <button type="submit" name="run_command" value="start">Start</button>
         <button type="submit" name="run_command" value="stop">Stop</button>
         <button type="submit" name="run_command" value="restart">Restart</button></td>
     </tr>
