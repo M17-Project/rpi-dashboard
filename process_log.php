@@ -48,6 +48,7 @@ foreach ($lines as $line) {
         continue;
     }
 
+    /**
     // Special handling for RF type entries
     if ($entry['type'] === 'RF') {
         $displayEntry = [
@@ -66,6 +67,7 @@ foreach ($lines as $line) {
         $processedEntries[] = $displayEntry;
         continue;
     }
+    **/
 
     // Handle Internet entries
     // Handle Voice Start
