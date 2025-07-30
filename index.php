@@ -1,3 +1,22 @@
+<?php
+
+include 'header.php';
+
+$configFile = 'config.php';
+$config = include $configFile;
+
+// Read the gateway config file
+$gateway_config = parse_ini_file($config['gateway_config_file'], true);
+
+$txfreq = $gateway_config['Radio']['TXFrequency'];
+$txfreq = $txfreq / 1000000; // convert to MHz
+$txfreq = number_format($txfreq, 3); // format with 3 decimal places
+
+$rxfreq = $gateway_config['Radio']['RXFrequency'];
+$rxfreq = $rxfreq / 1000000; // convert to MHz
+$rxfreq = number_format($rxfreq, 3); // format with 3 decimal places
+?>
+
 <!DOCTYPE html>
 <html>
 <script src="jquery-3.7.1.min.js"></script>
@@ -40,65 +59,34 @@ $(document).ready(function() {
 });
 </script>
 
-<?php
-
-include 'header.php';
-$configFile = 'config.php';
-$config = include $configFile;
-
-// Read the gateway config file
-$gateway_config = parse_ini_file($config['gateway_config_file'], true);
-
-// Build the left table on the dashboard
-echo '<table id="info_panel">';
-echo '<tr>';
-echo '  <th colspan="2">Device info</th>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>RX frequency</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Radio']['RXFrequency']).' Hz</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>TX frequency</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Radio']['TXFrequency']).' Hz</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>TX power</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Radio']['Power']).' dBm</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>Freq. correction</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Radio']['FrequencyCorr']).'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>AFC</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Radio']['AFC']).'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <th colspan="2">Interface info</th>';
-echo '  </tr>';
-echo '<tr>';
-echo '  <td>Device</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Modem']['Port']).'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>Baudrate</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Modem']['Speed']).'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>Callsign (ID)</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['General']['Callsign']).'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>Reflector</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Reflector']['Name']).'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>Module</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Reflector']['Module']).'</td>';
-echo '</tr>';
-echo '</table>';
-?>
+<table id="info_panel">
+<tr>
+  <th colspan="2">Node info</th>
+</tr>
+<tr>
+  <td>RX frequency</td>
+  <td><?= htmlspecialchars($rxfreq) ?> MHz</td>
+</tr>
+<tr>
+  <td>TX frequency</td>
+  <td><?= htmlspecialchars($txfreq) ?> MHz</td>
+</tr>
+<tr>
+  <th colspan="2">M17 Status</th>
+</tr>
+<tr>
+  <td>Callsign (ID)</td>
+  <td><?= htmlspecialchars($gateway_config['General']['Callsign']) ?></td>
+</tr>
+<tr>
+  <td>Reflector</td>
+  <td><?= htmlspecialchars($gateway_config['Reflector']['Name']) ?></td>
+</tr>
+<tr>
+  <td>Module</td>
+  <td><?= htmlspecialchars($gateway_config['Reflector']['Module']) ?></td>
+</tr>
+</table>
 
 <table id="lastheard">
   <tr>
