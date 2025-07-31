@@ -28,8 +28,6 @@ foreach ($lines as $line) {
     // Skip if already processed
     $entryHash = md5($line);
 
-    //$dateTime = new DateTime($entry['time'], new DateTimeZone($config['timezone']));
-    
     // Safely check for processed entries
     $isProcessed = false;
     if (is_array($processedEntries)) {
@@ -83,6 +81,7 @@ foreach ($lines as $line) {
             $displayEntry = [
                 'time' => date('Y-m-d H:i:s', strtotime($entry['time'])),
                 'timestamp' => strtotime($entry['time']), // Add timestamp for sorting
+                'shorttime' => date('m-d H:i', strtotime($entry['time'])),
                 'src' => trim($entry['src']),
                 'dst' => $entry['dst'],
                 'type' => $entry['type'],
