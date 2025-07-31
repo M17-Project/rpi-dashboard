@@ -6,9 +6,6 @@ $logFile = $config['gateway_log_file'];
 $maxlines = $config['maxlines'] ?? 20;
 $timezone = $config['timezone'] ?? 'UTC';
 
-//$connected_ref = "Disconnected";
-//$connected_mod = "-";
-
 $processedEntries = [];
 
 // Track new entries to return
@@ -50,7 +47,6 @@ foreach ($lines as $line) {
         continue;
     }
 
-
     //Handle reflector connect/disconnect events
     if ($entry['type'] === 'Reflector') {
         if ($entry['subtype'] === 'Connect') {
@@ -60,46 +56,20 @@ foreach ($lines as $line) {
 	    $_SESSION['connected_ref'] = "Disconnected";
 	    $_SESSION['connected_mod'] = "-";
         }
-
-        /**	
-        $displayEntry = [
-            'time' => date('Y-m-d H:i:s', strtotime($entry['time'])),
-            'timestamp' => strtotime($entry['time']),
-            'src' => trim($entry['src']),
-            'dst' => $entry['dst'],
-            'type' => $entry['type'],
-            'can' => $entry['can'],
-            'mer' => number_format((float)$entry['mer'], 2, '.', '') ?? NULL,
-            'duration' => "", // RF entries don't have duration
-            'hash' => $entryHash
-        ];
-
-        $newEntries[] = $displayEntry;
-        $processedEntries[] = $displayEntry;
-	**/
         continue;
     }
-    
-    /**
+
+    $_SESSION['radio_status'] = "Listening";
     // Special handling for RF type entries
     if ($entry['type'] === 'RF') {
-        $displayEntry = [
-            'time' => date('Y-m-d H:i:s', strtotime($entry['time'])),
-            'timestamp' => strtotime($entry['time']),
-            'src' => trim($entry['src']),
-            'dst' => $entry['dst'],
-            'type' => $entry['type'],
-            'can' => $entry['can'],
-            'mer' => number_format((float)$entry['mer'], 2, '.', '') ?? NULL,
-            'duration' => "", // RF entries don't have duration
-            'hash' => $entryHash
-        ];
-
-        $newEntries[] = $displayEntry;
-        $processedEntries[] = $displayEntry;
-        continue;
+        if ($entry['subtype'] === 'Voice Start') {
+	    $_SESSION['radio_status'] = "Transmitting: ".trim($entry['src']);
+	}
+    } else if ($entry['type'] != 'RF' && $entry['subtype'] === 'Voice Start') {
+        $_SESSION['radio_status'] = "Receiving: ". trim($entry['src']);
+    } else if ($entry['type'] != 'RF' && $entry['subtype'] === 'Voice End') {
+        $_SESSION['radio_status'] = "Listening";
     }
-    **/
 
     // Handle Internet entries
     // Handle Voice Start

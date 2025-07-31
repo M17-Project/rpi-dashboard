@@ -4,6 +4,7 @@ header('Content-Type: application/json');
 
 echo json_encode([
     'connected_ref' => $_SESSION['connected_ref'],
-    'connected_mod' => $_SESSION['connected_mod']
+    'connected_mod' => $_SESSION['connected_mod'],
+    'radio_status' => $_SESSION['radio_status']
 ]);
 ?>

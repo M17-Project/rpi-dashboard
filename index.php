@@ -27,14 +27,12 @@ function updateStatus() {
         .then(data => {
             const refCell = document.getElementById("ref");
             const modCell = document.getElementById("mod");
-
-            // Get the new values from the fetched data
-            const newRefValue = data.connected_ref;
-            const newModValue = data.connected_mod;
+            const radioStatusCell = document.getElementById("radio_status");
 
             // Update the text content of the cells
-            refCell.textContent = newRefValue;
-            modCell.textContent = newModValue;
+            refCell.textContent = data.connected_ref;
+            modCell.textContent = data.connected_mod;
+            radioStatusCell.textContent = data.radio_status;
 
             // Change background color based on the status
             if (refCell.textContent === "Disconnected") {
@@ -43,6 +41,14 @@ function updateStatus() {
             } else {
                 refCell.style.backgroundColor = "";
                 modCell.style.backgroundColor = "";
+            }
+
+            if (radioStatusCell.textContent.startsWith("Transmitting")) {
+                radioStatusCell.style.backgroundColor = "red";
+            } else if (radioStatusCell.textContent.startsWith("Receiving")) {
+                radioStatusCell.style.backgroundColor = "green";
+            } else {
+                radioStatusCell.style.backgroundColor = "";
             }
         })
         .catch(error => console.error('Error fetching session values:', error));
@@ -113,7 +119,11 @@ $(document).ready(function() {
 </tr>
 <tr>
   <td>Module</td>
-  <td id="mod"><?= htmlspecialchars($gateway_config['Reflector']['Module']) ?></td>
+  <td id="mod">N/A</td>
+</tr>
+<tr>
+  <td>Radio Status</td>
+  <td id="radio_status">Listening</td>
 </tr>
 </table>
 
