@@ -19,8 +19,6 @@ $voiceStarts = [];
 
 date_default_timezone_set($timezone);
 
-$last_mer = null;
-
 foreach ($lines as $line) {
     $entry = json_decode($line, true);
     
@@ -47,7 +45,7 @@ foreach ($lines as $line) {
         continue;
     }
 
-    //Handle reflector connect/disconnect events
+    // Handle reflector connect/disconnect events
     if ($entry['type'] === 'Reflector') {
         if ($entry['subtype'] === 'Connect') {
 	    $_SESSION['connected_ref'] = $entry['name'];
@@ -59,6 +57,7 @@ foreach ($lines as $line) {
         continue;
     }
 
+    // Construct status string for Radio Status box
     $_SESSION['radio_status'] = "Listening";
     // Special handling for RF type entries
     if ($entry['type'] === 'RF') {
@@ -71,11 +70,38 @@ foreach ($lines as $line) {
         $_SESSION['radio_status'] = "Listening";
     }
 
-    // Handle Internet entries
+    // Handle packet log lines
+    if ($entry['subtype'] === 'Packet') {
+        if ($startEntry) {
+
+	    if ($entry['type'] === 'RF') {
+		$mer = number_format((float)$entry['mer'], 2, '.', '') ?? NULL;
+	    } else {
+                $mer = "-";
+            }
+            // Prepare entry for display
+            $displayEntry = [
+                'time' => date('Y-m-d H:i:s', strtotime($entry['time'])),
+                'timestamp' => strtotime($entry['time']), // Add timestamp for sorting
+                'src' => trim($entry['src']),
+                'dst' => $entry['dst'],
+                'type' => $entry['type'],
+                'subtype' => $entry['subtype'],
+                'can' => $entry['can'],
+                'mer' => $mer,
+                'duration' => "",
+                'hash' => $entryHash
+            ];
+
+            $newEntries[] = $displayEntry;
+            $processedEntries[] = $displayEntry;
+        }
+        continue;
+    }
+
     // Handle Voice Start
     if ($entry['subtype'] === 'Voice Start') {
         $voiceStarts[$entry['src']] = $entry;
-	$last_mer = $entry['mer'] || "-";
         continue;
     }
 
@@ -88,6 +114,11 @@ foreach ($lines as $line) {
             $startTime = new DateTime($startEntry['time']);
             $endTime = new DateTime($entry['time']);
             $duration = $startTime->diff($endTime)->s;
+	    if ($entry['type'] === 'RF') {
+		$mer = number_format((float)$startEntry['mer'], 2, '.', '') ?? NULL;
+	    } else {
+                $mer = "-";
+            }
 
             // Prepare entry for display
             $displayEntry = [
@@ -96,8 +127,9 @@ foreach ($lines as $line) {
                 'src' => trim($entry['src']),
                 'dst' => $entry['dst'],
                 'type' => $entry['type'],
+                'subtype' => "Voice",
                 'can' => $entry['can'],
-                'mer' => number_format((float)$last_mer, 2, '.', '') ?? NULL,
+                'mer' => $mer,
                 'duration' => $duration." sec",
                 'hash' => $entryHash
             ];

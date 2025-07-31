@@ -72,6 +72,7 @@ function updateDashboard() {
                             <td>${entry.src}</td>
                             <td>${entry.dst}</td>
                             <td>${entry.type}</td>
+                            <td>${entry.subtype}</td>
                             <td>${entry.can}</td>
                             <td>${entry.mer || 'N/A'}</td>
                             <td>${entry.duration}</td>
@@ -133,6 +134,7 @@ $(document).ready(function() {
     <th>Source</th>
     <th>Destination</th>
     <th>Interface</th>
+    <th>Type</th>
     <th>CAN</th>
     <th>MER</th>
     <th>Duration</th>
