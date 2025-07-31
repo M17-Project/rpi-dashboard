@@ -1,6 +1,5 @@
 <?php
-$configFile = 'config.php';
-$config = include $configFile;
+include 'config_include.php';
 
 // Load config
 $gateway_config = parse_ini_file($config['gateway_config_file'], true, INI_SCANNER_RAW);

@@ -1,9 +1,7 @@
 <?php
 
 include 'header.php';
-
-$configFile = 'config.php';
-$config = include $configFile;
+include 'config_include.php';
 
 // Read the gateway config file
 $gateway_config = parse_ini_file($config['gateway_config_file'], true);
@@ -21,6 +19,35 @@ $rxfreq = number_format($rxfreq, 3); // format with 3 decimal places
 <html>
 <script src="jquery-3.7.1.min.js"></script>
 <script>
+
+function updateStatus() {
+    // Fetch the current session values from the server
+    fetch('getSessionValues.php') 
+        .then(response => response.json())
+        .then(data => {
+            const refCell = document.getElementById("ref");
+            const modCell = document.getElementById("mod");
+
+            // Get the new values from the fetched data
+            const newRefValue = data.connected_ref;
+            const newModValue = data.connected_mod;
+
+            // Update the text content of the cells
+            refCell.textContent = newRefValue;
+            modCell.textContent = newModValue;
+
+            // Change background color based on the status
+            if (refCell.textContent === "Disconnected") {
+                refCell.style.backgroundColor = "red";
+                modCell.style.backgroundColor = "red";
+            } else {
+                refCell.style.backgroundColor = "";
+                modCell.style.backgroundColor = "";
+            }
+        })
+        .catch(error => console.error('Error fetching session values:', error));
+}
+
 function updateDashboard() {
     $.ajax({
         url: 'process_log.php',
@@ -55,6 +82,8 @@ function updateDashboard() {
 
 $(document).ready(function() {
     updateDashboard(); // Initial load
+    updateStatus();
+    setInterval(updateStatus, 1000);
     setInterval(updateDashboard, 1000);
 });
 </script>
@@ -80,11 +109,11 @@ $(document).ready(function() {
 </tr>
 <tr>
   <td>Reflector</td>
-  <td><?= htmlspecialchars($gateway_config['Reflector']['Name']) ?></td>
+  <td id="ref">N/A</td>
 </tr>
 <tr>
   <td>Module</td>
-  <td><?= htmlspecialchars($gateway_config['Reflector']['Module']) ?></td>
+  <td id="mod"><?= htmlspecialchars($gateway_config['Reflector']['Module']) ?></td>
 </tr>
 </table>
 

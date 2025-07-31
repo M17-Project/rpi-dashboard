@@ -1,6 +1,5 @@
 <?php
-$configFile = 'config.php';
-$config = include $configFile;
+include 'config_include.php';
 
 $message = "";
 
@@ -78,7 +77,6 @@ PHP;
 }
 
 // Get all time zones
-//$timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
 $timezones = DateTimeZone::listIdentifiers();
 $timezone = $config['timezone'];
 
