@@ -75,7 +75,7 @@ foreach ($lines as $line) {
         if ($startEntry) {
 
 	    if ($entry['type'] === 'RF') {
-		$mer = number_format((float)$entry['mer'], 2, '.', '') ?? NULL;
+		$mer = number_format((float)$entry['mer'], 1, '.', '')."%" ?? NULL;
 	    } else {
                 $mer = "-";
             }
@@ -116,7 +116,7 @@ foreach ($lines as $line) {
             $endTime = new DateTime($entry['time']);
             $duration = $startTime->diff($endTime)->s;
 	    if ($entry['type'] === 'RF') {
-		$mer = number_format((float)$startEntry['mer'], 2, '.', '') ?? NULL;
+		$mer = number_format((float)$startEntry['mer'], 1, '.', '')."%" ?? NULL;
 	    } else {
                 $mer = "-";
             }
