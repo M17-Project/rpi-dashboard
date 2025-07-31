@@ -1,3 +1,4 @@
 files/*.ini
 files/*.log
 *.bak
+config.php
