@@ -82,9 +82,7 @@ function updateDashboard() {
 		    if (entry.subtype == "Packet" && entry.smsMessage) {
                         $('#sms').append(
                             `<tr>
-                                <td>${entry.src}</td>
-                                <td>${entry.dst}</td>
-                                <td>${entry.smsMessage}</td>
+                                <td>${entry.time} ${entry.src} > ${entry.dst}: <b>${entry.smsMessage}</b></td>
                             </tr>`
                         );
 	            }
@@ -146,12 +144,8 @@ $(document).ready(function() {
 
     <table class="dashboard" id="sms">
       <tr>
-        <th colspan="3">Text Messages</th>
+        <th>Text Messages</th>
       </tr>
-      <tr>
-        <th>From</th>
-        <th>To</th>
-        <th>Message</th>
       </tr>
     </table>
   </div>
