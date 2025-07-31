@@ -1,11 +1,10 @@
 <?php
 header('Content-Type: application/json');
-
-$configFile = 'config.php';
-$config = include $configFile;
+include 'config_include.php';
 
 $logFile = $config['gateway_log_file'];
 $maxlines = $config['maxlines'] ?? 20;
+$timezone = $config['timezone'] ?? 'UTC';
 
 $processedEntries = [];
 
@@ -18,6 +17,8 @@ $lines = file($logFile, FILE_IGNORE_NEW_LINES);
 // Temporary storage for voice start entries
 $voiceStarts = [];
 
+date_default_timezone_set($timezone);
+
 foreach ($lines as $line) {
     $entry = json_decode($line, true);
     
@@ -26,7 +27,7 @@ foreach ($lines as $line) {
     
     // Skip if already processed
     $entryHash = md5($line);
-    
+
     // Safely check for processed entries
     $isProcessed = false;
     if (is_array($processedEntries)) {
@@ -42,26 +43,62 @@ foreach ($lines as $line) {
         continue;
     }
 
-    // Special handling for RF type entries
-    if ($entry['type'] === 'RF') {
-        $displayEntry = [
-            'time' => date('Y-m-d H:i:s', strtotime($entry['time'])),
-            'timestamp' => strtotime($entry['time']),
-            'src' => trim($entry['src']),
-            'dst' => $entry['dst'],
-            'type' => $entry['type'],
-            'can' => $entry['can'],
-            'mer' => number_format((float)$entry['mer'], 2, '.', '') ?? NULL,
-            'duration' => "", // RF entries don't have duration
-            'hash' => $entryHash
-        ];
-
-        $newEntries[] = $displayEntry;
-        $processedEntries[] = $displayEntry;
+    // Handle reflector connect/disconnect events
+    if ($entry['type'] === 'Reflector') {
+        if ($entry['subtype'] === 'Connect') {
+	    $_SESSION['connected_ref'] = $entry['name'];
+	    $_SESSION['connected_mod'] = $entry['module'];
+	} else if ($entry['subtype'] === 'Disconnect') {
+	    $_SESSION['connected_ref'] = "Disconnected";
+	    $_SESSION['connected_mod'] = "-";
+        }
         continue;
     }
 
-    // Handle Internet entries
+    // Construct status string for Radio Status box
+    $_SESSION['radio_status'] = "Listening";
+    // Special handling for RF type entries
+    if ($entry['type'] === 'RF') {
+        if ($entry['subtype'] === 'Voice Start') {
+	    $_SESSION['radio_status'] = "TX: ".trim($entry['src']);
+	}
+    } else if ($entry['type'] != 'RF' && $entry['subtype'] === 'Voice Start') {
+        $_SESSION['radio_status'] = "RX: ". trim($entry['src']);
+    } else if ($entry['type'] != 'RF' && $entry['subtype'] === 'Voice End') {
+        $_SESSION['radio_status'] = "Listening";
+    }
+
+    // Handle packet log lines
+    if ($entry['subtype'] === 'Packet') {
+        if ($startEntry) {
+
+	    if ($entry['type'] === 'RF') {
+		$mer = number_format((float)$entry['mer'], 1, '.', '')."%" ?? NULL;
+	    } else {
+                $mer = "-";
+            }
+            // Prepare entry for display
+            $displayEntry = [
+                'time' => date('Y-m-d H:i:s', strtotime($entry['time'])),
+                'timestamp' => strtotime($entry['time']), // Add timestamp for sorting
+                'shorttime' => date('m-d H:i', strtotime($entry['time'])),
+                'src' => trim($entry['src']),
+                'dst' => $entry['dst'],
+                'type' => $entry['type'],
+                'subtype' => $entry['subtype'],
+                'can' => $entry['can'],
+                'mer' => $mer,
+                'duration' => "",
+                'smsMessage' => $entry['smsMessage'],
+                'hash' => $entryHash
+            ];
+
+            $newEntries[] = $displayEntry;
+            $processedEntries[] = $displayEntry;
+        }
+        continue;
+    }
+
     // Handle Voice Start
     if ($entry['subtype'] === 'Voice Start') {
         $voiceStarts[$entry['src']] = $entry;
@@ -77,6 +114,11 @@ foreach ($lines as $line) {
             $startTime = new DateTime($startEntry['time']);
             $endTime = new DateTime($entry['time']);
             $duration = $startTime->diff($endTime)->s;
+	    if ($entry['type'] === 'RF') {
+		$mer = number_format((float)$startEntry['mer'], 1, '.', '')."%" ?? NULL;
+	    } else {
+                $mer = "-";
+            }
 
             // Prepare entry for display
             $displayEntry = [
@@ -85,8 +127,9 @@ foreach ($lines as $line) {
                 'src' => trim($entry['src']),
                 'dst' => $entry['dst'],
                 'type' => $entry['type'],
+                'subtype' => "Voice",
                 'can' => $entry['can'],
-                'mer' => $entry['mer'] ?? null,
+                'mer' => $mer,
                 'duration' => $duration." sec",
                 'hash' => $entryHash
             ];

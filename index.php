@@ -1,7 +1,59 @@
+<?php
+
+include 'header.php';
+include 'config_include.php';
+
+// Read the gateway config file
+$gateway_config = parse_ini_file($config['gateway_config_file'], true);
+
+$txfreq = $gateway_config['Radio']['TXFrequency'];
+$txfreq = $txfreq / 1000000; // convert to MHz
+$txfreq = number_format($txfreq, 3); // format with 3 decimal places
+
+$rxfreq = $gateway_config['Radio']['RXFrequency'];
+$rxfreq = $rxfreq / 1000000; // convert to MHz
+$rxfreq = number_format($rxfreq, 3); // format with 3 decimal places
+?>
+
 <!DOCTYPE html>
 <html>
 <script src="jquery-3.7.1.min.js"></script>
 <script>
+
+function updateStatus() {
+    // Fetch the current session values from the server
+    fetch('getSessionValues.php') 
+        .then(response => response.json())
+        .then(data => {
+            const refCell = document.getElementById("ref");
+            const modCell = document.getElementById("mod");
+            const radioStatusCell = document.getElementById("radio_status");
+
+            // Update the text content of the cells
+            refCell.textContent = data.connected_ref;
+            modCell.textContent = data.connected_mod;
+            radioStatusCell.textContent = data.radio_status;
+
+            // Change background color based on the status
+            if (refCell.textContent === "Disconnected") {
+                refCell.style.backgroundColor = "red";
+                modCell.style.backgroundColor = "red";
+            } else {
+                refCell.style.backgroundColor = "";
+                modCell.style.backgroundColor = "";
+            }
+
+            if (radioStatusCell.textContent.startsWith("TX")) {
+                radioStatusCell.style.backgroundColor = "red";
+            } else if (radioStatusCell.textContent.startsWith("RX")) {
+                radioStatusCell.style.backgroundColor = "green";
+            } else {
+                radioStatusCell.style.backgroundColor = "";
+            }
+        })
+        .catch(error => console.error('Error fetching session values:', error));
+}
+
 function updateDashboard() {
     $.ajax({
         url: 'process_log.php',
@@ -12,6 +64,7 @@ function updateDashboard() {
             if (data && data.length > 0) {
                 // Clear existing table rows except the header
                 $('#lastheard tr:not(:first)').remove();
+                $('#sms tr:not(:first)').remove();
 
                 data.forEach(function(entry) {
                     $('#lastheard').append(
@@ -20,11 +73,20 @@ function updateDashboard() {
                             <td>${entry.src}</td>
                             <td>${entry.dst}</td>
                             <td>${entry.type}</td>
+                            <td>${entry.subtype}</td>
                             <td>${entry.can}</td>
                             <td>${entry.mer || 'N/A'}</td>
                             <td>${entry.duration}</td>
                         </tr>`
                     );
+
+		    if (entry.subtype == "Packet" && entry.smsMessage) {
+                        $('#sms').append(
+                            `<tr>
+                                <td><i>${entry.shorttime} ${entry.src} > ${entry.dst}:</i> ${entry.smsMessage}</td>
+                            </tr>`
+                        );
+	            }
                 });
             }
         },
@@ -36,81 +98,75 @@ function updateDashboard() {
 
 $(document).ready(function() {
     updateDashboard(); // Initial load
+    updateStatus();
+    setInterval(updateStatus, 500);
     setInterval(updateDashboard, 1000);
 });
 </script>
 
-<?php
+<div class="db-container">
+  <div class="db-left-column">
 
-include 'header.php';
-$configFile = 'config.php';
-$config = include $configFile;
+    <table id="info_panel">
+      <tr>
+        <th colspan="2">Node info</th>
+      </tr>
+      <tr>
+        <td>RX frequency</td>
+        <td><?= htmlspecialchars($rxfreq) ?> MHz</td>
+      </tr>
+      <tr>
+        <td>TX frequency</td>
+        <td><?= htmlspecialchars($txfreq) ?> MHz</td>
+      </tr>
+    </table>
 
-// Read the gateway config file
-$gateway_config = parse_ini_file($config['gateway_config_file'], true);
+    <table class="dashboard" id="info_panel">
+      <tr>
+        <th colspan="2">M17 Status</th>
+      </tr>
+      <tr>
+        <td>Callsign (ID)</td>
+        <td><?= htmlspecialchars($gateway_config['General']['Callsign']) ?></td>
+      </tr>
+      <tr>
+        <td>Reflector</td>
+        <td id="ref">N/A</td>
+      </tr>
+      <tr>
+        <td>Module</td>
+        <td id="mod">N/A</td>
+      </tr>
+      <tr>
+        <td>Radio Status</td>
+        <td id="radio_status">Listening</td>
+      </tr>
+    </table>
 
-// Build the left table on the dashboard
-echo '<table id="info_panel">';
-echo '<tr>';
-echo '  <th colspan="2">Device info</th>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>RX frequency</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Radio']['RXFrequency']).' Hz</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>TX frequency</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Radio']['TXFrequency']).' Hz</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>TX power</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Radio']['Power']).' dBm</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>Freq. correction</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Radio']['FrequencyCorr']).'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>AFC</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Radio']['AFC']).'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <th colspan="2">Interface info</th>';
-echo '  </tr>';
-echo '<tr>';
-echo '  <td>Device</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Modem']['Port']).'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>Baudrate</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Modem']['Speed']).'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>Callsign (ID)</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['General']['Callsign']).'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>Reflector</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Reflector']['Name']).'</td>';
-echo '</tr>';
-echo '<tr>';
-echo '  <td>Module</td>';
-echo '  <td>'.htmlspecialchars($gateway_config['Reflector']['Module']).'</td>';
-echo '</tr>';
-echo '</table>';
-?>
+    <table class="dashboard" id="sms">
+      <tr>
+        <th>Text Messages</th>
+      </tr>
+      </tr>
+    </table>
+  </div>
 
-<table id="lastheard">
-  <tr>
-    <th>Time</th>
-    <th>Source</th>
-    <th>Destination</th>
-    <th>Interface</th>
-    <th>CAN</th>
-    <th>MER</th>
-    <th>Duration</th>
-  </tr>
-</table>
+  <div class="db-right-column">
+    <table class="dashboard" id="lastheard">
+      <tr>
+        <th>Time</th>
+        <th>Source</th>
+        <th>Destination</th>
+        <th>Interface</th>
+        <th>Type</th>
+        <th>CAN</th>
+        <th>MER</th>
+        <th>Duration</th>
+      </tr>
+    </table>
+  </div>
+</div>
+
 
 <?php include 'footer.php';?>
 
