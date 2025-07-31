@@ -90,6 +90,7 @@ foreach ($lines as $line) {
                 'can' => $entry['can'],
                 'mer' => $mer,
                 'duration' => "",
+                'smsMessage' => $entry['smsMessage'],
                 'hash' => $entryHash
             ];
 

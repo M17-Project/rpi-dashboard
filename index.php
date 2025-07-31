@@ -64,6 +64,7 @@ function updateDashboard() {
             if (data && data.length > 0) {
                 // Clear existing table rows except the header
                 $('#lastheard tr:not(:first)').remove();
+                $('#sms tr:not(:first)').remove();
 
                 data.forEach(function(entry) {
                     $('#lastheard').append(
@@ -78,6 +79,15 @@ function updateDashboard() {
                             <td>${entry.duration}</td>
                         </tr>`
                     );
+		    if (entry.subtype == "Packet" && entry.smsMessage) {
+                        $('#sms').append(
+                            `<tr>
+                                <td>${entry.src}</td>
+                                <td>${entry.dst}</td>
+                                <td>${entry.smsMessage}</td>
+                            </tr>`
+                        );
+	            }
                 });
             }
         },
@@ -134,7 +144,7 @@ $(document).ready(function() {
       </tr>
     </table>
 
-    <table class="dashboard" id="textmessages">
+    <table class="dashboard" id="sms">
       <tr>
         <th colspan="3">Text Messages</th>
       </tr>
