@@ -95,51 +95,73 @@ $(document).ready(function() {
 });
 </script>
 
-<table id="info_panel">
-<tr>
-  <th colspan="2">Node info</th>
-</tr>
-<tr>
-  <td>RX frequency</td>
-  <td><?= htmlspecialchars($rxfreq) ?> MHz</td>
-</tr>
-<tr>
-  <td>TX frequency</td>
-  <td><?= htmlspecialchars($txfreq) ?> MHz</td>
-</tr>
-<tr>
-  <th colspan="2">M17 Status</th>
-</tr>
-<tr>
-  <td>Callsign (ID)</td>
-  <td><?= htmlspecialchars($gateway_config['General']['Callsign']) ?></td>
-</tr>
-<tr>
-  <td>Reflector</td>
-  <td id="ref">N/A</td>
-</tr>
-<tr>
-  <td>Module</td>
-  <td id="mod">N/A</td>
-</tr>
-<tr>
-  <td>Radio Status</td>
-  <td id="radio_status">Listening</td>
-</tr>
-</table>
+<div class="db-container">
+  <div class="db-left-column">
 
-<table id="lastheard">
-  <tr>
-    <th>Time</th>
-    <th>Source</th>
-    <th>Destination</th>
-    <th>Interface</th>
-    <th>Type</th>
-    <th>CAN</th>
-    <th>MER</th>
-    <th>Duration</th>
-  </tr>
-</table>
+    <table id="info_panel">
+      <tr>
+        <th colspan="2">Node info</th>
+      </tr>
+      <tr>
+        <td>RX frequency</td>
+        <td><?= htmlspecialchars($rxfreq) ?> MHz</td>
+      </tr>
+      <tr>
+        <td>TX frequency</td>
+        <td><?= htmlspecialchars($txfreq) ?> MHz</td>
+      </tr>
+    </table>
+
+    <table class="dashboard" id="info_panel">
+      <tr>
+        <th colspan="2">M17 Status</th>
+      </tr>
+      <tr>
+        <td>Callsign (ID)</td>
+        <td><?= htmlspecialchars($gateway_config['General']['Callsign']) ?></td>
+      </tr>
+      <tr>
+        <td>Reflector</td>
+        <td id="ref">N/A</td>
+      </tr>
+      <tr>
+        <td>Module</td>
+        <td id="mod">N/A</td>
+      </tr>
+      <tr>
+        <td>Radio Status</td>
+        <td id="radio_status">Listening</td>
+      </tr>
+    </table>
+
+    <table class="dashboard" id="textmessages">
+      <tr>
+        <th colspan="3">Text Messages</th>
+      </tr>
+      <tr>
+        <th>From</th>
+        <th>To</th>
+        <th>Message</th>
+      </tr>
+    </table>
+  </div>
+
+  <div class="db-right-column">
+    <table class="dashboard" id="lastheard">
+      <tr>
+        <th>Time</th>
+        <th>Source</th>
+        <th>Destination</th>
+        <th>Interface</th>
+        <th>Type</th>
+        <th>CAN</th>
+        <th>MER</th>
+        <th>Duration</th>
+      </tr>
+    </table>
+  </div>
+</div>
+
 
 <?php include 'footer.php';?>
 

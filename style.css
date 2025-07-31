@@ -52,29 +52,39 @@ li a{
 li a:hover{
     background-color: #04AA6D;
 }
-  
-/*.active{
-    background-color: #04AA6D;
-}*/
 
-/* Left hand side table */
-#info_panel{
+.db-container {
+  display: flex;
+  gap: 30px; /* space between left and right columns */
+}
+
+.db-left-column {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* space between the 3 tables */
+}
+
+.db-right-column {
+  width: 100%;
+}
+
+table{
     font-family: Arial, Helvetica, sans-serif;
     border-collapse: collapse;
-    width: 25%;
-    float: left;
+    width: 100%;
 }
   
-#info_panel td, #info_panel th{
+table td, th{
     border: 1px solid #ddd;
     padding: 5px;
 }
   
-#info_panel tr:nth-child(even){background-color: #f2f2f2;}
+table tr:nth-child(even){background-color: #f2f2f2;}
   
-#info_panel tr:hover {background-color: #ddd;}
+table tr:hover {background-color: #ddd;}
   
-#info_panel th{
+table th{
     padding-top: 5;
     padding-bottom: 5px;
     text-align: left;
@@ -84,31 +94,11 @@ li a:hover{
 
 /* Config item table */
 #config_panel{
-    font-family: Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
     width: 800px;
 }
 
-#config_panel td, #config_panel th{
-    border: 1px solid #ddd;
-    padding: 5px;
-}
-
-#config_panel tr:nth-child(even){background-color: #f2f2f2;}
-
-#config_panel tr:hover {background-color: #ddd;}
-
-#config_panel th{
-    padding-top: 5;
-    padding-bottom: 5px;
-    text-align: left;
-    background-color: #04AA6D;
-    color: white;
-}
-
-
 .config-panel-container {
-    width: 100%; /* or a fixed width if needed */
+    width: 100%; 
 }
 
 .config-panel-wrapper {
@@ -121,29 +111,8 @@ input[type="text"] {
 
 /* Last heard table */
 #lastheard{
-    font-family: Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
-    width: 70%;
-    float: right;
+    width: 100%;
 }
-  
-#lastheard td, #lastheard th{
-    border: 1px solid #ddd;
-    padding: 5px;
-}
-  
-#lastheard tr:nth-child(even){background-color: #f2f2f2;}
-  
-#lastheard tr:hover {background-color: #ddd;}
-  
-#lastheard th{
-    padding-top: 5px;
-    padding-bottom: 5px;
-    text-align: left;
-    background-color: #04AA6D;
-    color: white;
-}
-
 .message { background: #04AA6D; color: white; border: 1px solid green; padding: 10px; margin-bottom: 15px; }
 
 #main {
@@ -151,4 +120,3 @@ input[type="text"] {
     padding-top: 70px; /* don't show stuff under the header div */
     overflow: auto;
 }
-
