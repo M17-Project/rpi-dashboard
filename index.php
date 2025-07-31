@@ -43,9 +43,9 @@ function updateStatus() {
                 modCell.style.backgroundColor = "";
             }
 
-            if (radioStatusCell.textContent.startsWith("Transmitting")) {
+            if (radioStatusCell.textContent.startsWith("TX")) {
                 radioStatusCell.style.backgroundColor = "red";
-            } else if (radioStatusCell.textContent.startsWith("Receiving")) {
+            } else if (radioStatusCell.textContent.startsWith("RX")) {
                 radioStatusCell.style.backgroundColor = "green";
             } else {
                 radioStatusCell.style.backgroundColor = "";
@@ -89,7 +89,7 @@ function updateDashboard() {
 $(document).ready(function() {
     updateDashboard(); // Initial load
     updateStatus();
-    setInterval(updateStatus, 1000);
+    setInterval(updateStatus, 500);
     setInterval(updateDashboard, 1000);
 });
 </script>

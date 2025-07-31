@@ -63,10 +63,10 @@ foreach ($lines as $line) {
     // Special handling for RF type entries
     if ($entry['type'] === 'RF') {
         if ($entry['subtype'] === 'Voice Start') {
-	    $_SESSION['radio_status'] = "Transmitting: ".trim($entry['src']);
+	    $_SESSION['radio_status'] = "TX: ".trim($entry['src']);
 	}
     } else if ($entry['type'] != 'RF' && $entry['subtype'] === 'Voice Start') {
-        $_SESSION['radio_status'] = "Receiving: ". trim($entry['src']);
+        $_SESSION['radio_status'] = "RX: ". trim($entry['src']);
     } else if ($entry['type'] != 'RF' && $entry['subtype'] === 'Voice End') {
         $_SESSION['radio_status'] = "Listening";
     }
