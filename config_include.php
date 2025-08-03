@@ -11,6 +11,10 @@ $defaultConfig = [
     'timezone' => 'UTC',
 ];
 
+if (!$_SESSION['radio_status']) {
+    $_SESSION['radio_status'] = "Listening";
+}
+
 // Create the config file if it doesn't exist
 if (!file_exists($configFile)) {
     file_put_contents($configFile, "<?php\nreturn " . var_export($defaultConfig, true) . ";\n");

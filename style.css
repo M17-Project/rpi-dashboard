@@ -96,6 +96,10 @@ table th{
     color: white;
 }
 
+#sms td{
+    font-family: monospace;
+}
+
 /* Config item table */
 #config_panel{
     width: 800px;
