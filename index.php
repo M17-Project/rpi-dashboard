@@ -22,7 +22,7 @@ $rxfreq = number_format($rxfreq, 3); // format with 3 decimal places
 
 function updateStatus() {
     // Fetch the current session values from the server
-    fetch('getSessionValues.php') 
+    fetch('get_status_info.php') 
         .then(response => response.json())
         .then(data => {
             const refCell = document.getElementById("ref");
@@ -56,7 +56,7 @@ function updateStatus() {
 
 function updateDashboard() {
     $.ajax({
-        url: 'process_log.php',
+        url: 'get_lastheard.php',
         method: 'GET',
         dataType: 'json',
         success: function(data) {
