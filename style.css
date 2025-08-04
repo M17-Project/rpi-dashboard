@@ -131,6 +131,21 @@ input[type="text"] {
     margin-bottom: 15px;
 }
 
+.callsign {
+    color: #04AA6D;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.callsign a {
+    color: #04AA6D;
+    font-weight: bold;
+    text-decoration: none;
+}
+.callsign a:hover {
+    text-decoration: underline;
+}
+
 #main {
     position: absolute;
     top: 70px;

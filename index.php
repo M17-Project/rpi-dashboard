@@ -70,7 +70,7 @@ function updateDashboard() {
                     $('#lastheard').append(
                         `<tr>
                             <td>${entry.time}</td>
-                            <td>${entry.src}</td>
+                            <td class='callsign'><a href="https://www.qrz.com/db/${entry.src}" target="_blank">${entry.src}</a></td>
                             <td>${entry.dst}</td>
                             <td>${entry.type}</td>
                             <td>${entry.subtype}</td>
