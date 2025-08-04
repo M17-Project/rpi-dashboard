@@ -50,15 +50,35 @@ function tailFile($filePath, $lines = 50) {
     $lineCount = 0;
     $fileSize = filesize($filePath);
 
+    if ($fileSize === 0) {
+        fclose($f);
+        return [];
+    }
+
     fseek($f, 0, SEEK_END);
 
     while (ftell($f) > 0 && $lineCount <= $lines) {
         $readSize = ($fileSize - abs($pos) < $chunkSize) ? $fileSize - abs($pos) : $chunkSize;
+
+        // Ensure readSize is never zero or negative
+        if ($readSize <= 0) {
+            break;
+        }
+
         $pos -= $readSize;
         fseek($f, $pos, SEEK_END);
-        $buffer = fread($f, $readSize) . $buffer;
+        $data = fread($f, $readSize);
 
+        if ($data === false) {
+            break;  // Stop on fread failure
+        }
+
+        $buffer = $data . $buffer;
         $lineCount = substr_count($buffer, "\n");
+
+        if (abs($pos) >= $fileSize) {
+            break;  // Stop if we've reached the beginning of the file
+        }
     }
 
     fclose($f);

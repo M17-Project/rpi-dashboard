@@ -39,7 +39,7 @@ function updateStatus() {
                 refCell.style.backgroundColor = "red";
                 modCell.style.backgroundColor = "red";
             } else {
-                refCell.style.backgroundColor = "";
+                refCell.style.backgroundColor = "#B9E2A7";
                 modCell.style.backgroundColor = "";
             }
 
