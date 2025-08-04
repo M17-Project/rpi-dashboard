@@ -1,7 +1,7 @@
 <?php
 
 include 'header.php';
-include 'config_include.php';
+include 'functions.php';
 
 // Read the gateway config file
 $gateway_config = parse_ini_file($config['gateway_config_file'], true);

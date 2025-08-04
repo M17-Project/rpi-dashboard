@@ -1,47 +1,58 @@
 <?php
 header('Content-Type: application/json');
-/**
-// Generate random coordinates around a base point
-function generateRandomLocations($baseLat, $baseLng, $count) {
-    $locations = [];
-    for ($i = 0; $i < $count; $i++) {
-        $randomLat = $baseLat + (mt_rand(-5000, 5000) / 100000.0); // +/- ~0.05 deg (~5km)
-        $randomLng = $baseLng + (mt_rand(-5000, 5000) / 100000.0);
-        $locations[] = [
-            'lat' => $randomLat,
-            'lng' => $randomLng,
-            'label' => "<b>SP5WWP-" . ($i+1) . "</b><br>From PHP"
-        ];
+include 'functions.php';
+
+$logFile = $config['gateway_log_file'];
+
+// Track new entries to return
+$locations = [];
+
+// Read log file
+$lines = tailFile($logFile, 100);
+
+// Function to add new lines with additional info
+// to map marker labels, checks if key is there
+function addToLabel($e, $key){
+    $ret = "";
+    if (isset($e[$key])){
+        $ret = "<br>".ucfirst($key).": ".$e[$key];
     }
-    return $locations;
+    return $ret;
 }
 
-$baseLat = 52.43098341616264;
-$baseLng = 20.715232454238752;
-$count = isset($_GET['count']) ? intval($_GET['count']) : 10;
+foreach ($lines as $line) {
+    $entry = json_decode($line, true);
 
-echo json_encode(generateRandomLocations($baseLat, $baseLng, $count));
-**/
+    // Skip if entry is invalid
+    if (!$entry) continue;
+    if (!isset($entry['src'])) continue;
 
-header('Content-Type: application/json');
+    // Check if the event is of the subtype GNSS
+    if ($entry['subtype'] === 'GNSS') {
+	// Delete all previous locations of the current call sign
+	// as we only want to see the latest location
+        foreach ($locations as $key => $location) {
+            if ($location['call'] === $entry['src']) {
+                unset($locations[$key]);
+            }
+        }
 
-function generateRandomWorldLocations($count) {
-    $locations = [];
-    for ($i = 0; $i < $count; $i++) {
-        // Latitude: -90 to 90
-        $randomLat = mt_rand(-9000000, 9000000) / 100000.0;
-        // Longitude: -180 to 180
-        $randomLng = mt_rand(-18000000, 18000000) / 100000.0;
+	$locations = array_values($locations);
 
+	// Contruct the label that you will see when you click a pin on the map
+	$label = "<b><a href='https://www.qrz.com/db/".$entry['src']."' target=r'_blank'>".$entry['src']."</a></b>"; 
+	$label = $label.addToLabel($entry, 'bearing');
+	$label = $label.addToLabel($entry, 'speed');
+	$label = $label.addToLabel($entry, 'altitude');
+
+        // add pin/location to $locations
         $locations[] = [
-            'lat' => $randomLat,
-            'lng' => $randomLng,
-            'label' => "<b>Marker-" . ($i + 1) . "</b><br>Random Global Location"
+            'lat' => $entry['latitude'],
+            'lng' => $entry['longitude'],
+            'call' => $entry['src'],
+            'label' => $label
         ];
     }
-    return $locations;
 }
-
-$count = isset($_GET['count']) ? intval($_GET['count']) : 50;
-echo json_encode(generateRandomWorldLocations($count));
+echo json_encode($locations);
 ?>

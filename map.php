@@ -1,5 +1,5 @@
 <?php
-include 'config_include.php';
+include 'functions.php';
 
 ?>
 <!DOCTYPE html>
@@ -18,32 +18,28 @@ include 'config_include.php';
 
 <div id="usermap"></div>
 
-<!-- Initialize & add OpenStreetMap to HTML element -->
-
 <script>
+    const map = L.map('usermap').setView([0, 0], 2); // World center, zoomed out
 
-const map = L.map('usermap').setView([0, 0], 2); // World center, zoomed out
+    L.maplibreGL({
+      style: 'https://tiles.openfreemap.org/styles/liberty',
+    }).addTo(map)
 
-L.maplibreGL({
-  style: 'https://tiles.openfreemap.org/styles/liberty',
-}).addTo(map)
+    // Fetch coordinates from PHP and add markers
+    fetch('get_coordinates.php')
+        .then(response => response.json())
+        .then(locations => {
+            locations.forEach((loc) => {
+                const marker = L.marker([loc.lat, loc.lng])
+                    .bindPopup(loc.label)
+                    .addTo(map);
 
-// Fetch coordinates from PHP and add markers
-fetch('get_coordinates.php?count=20')
-    .then(response => response.json())
-    .then(locations => {
-        locations.forEach((loc) => {
-            const marker = L.marker([loc.lat, loc.lng])
-                .bindPopup(loc.label)
-                .addTo(map);
-
-            marker.on('click', function(mrk) {
-                map.setView([mrk.latlng.lat, mrk.latlng.lng], 6);
+                marker.on('click', function(mrk) {
+                    map.setView([mrk.latlng.lat, mrk.latlng.lng], 6);
+                });
             });
-        });
-    })
-    .catch(error => console.error('Error fetching locations:', error));
-
+        })
+        .catch(error => console.error('Error fetching locations:', error));
 </script>
 
 </div>
