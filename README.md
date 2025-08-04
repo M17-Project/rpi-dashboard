@@ -2,7 +2,7 @@
 
 ![preview](/screenshot.jpg)
 
-A lightweight web-based dashboard for managing and monitoring an **M17 hotspot** based on a **CC1200 HAT**, running on a Raspberry Pi.  
+A lightweight, web-based dashboard for managing and monitoring an **M17 hotspot** based on a **CC1200 HAT**, running on a Raspberry Pi.  
 It pairs with the `m17-gateway` backend to provide real‑time status, logs, and control over the M17 hotspot.
 
 ---
@@ -19,7 +19,7 @@ The UI retrieves data by reading a JSON logfile produced by the m17-gateway.
 
 ## Prerequisites
 
-- **Hardware**: Raspberry Pi (Zero, 3, 4, or newer) with a **CC1200 HAT**  
+- **Hardware**: Raspberry Pi (Zero, 3, 4, or newer) with a **[CC1200 HAT](https://github.com/M17-Project/CC1200_HAT-hw)**  
 - **Backend**: `m17-gateway` service (from [jancona/m17](https://github.com/jancona/m17/tree/master/cmd/m17-gateway))  
 
 ---
