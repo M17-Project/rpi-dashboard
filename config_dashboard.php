@@ -1,5 +1,5 @@
 <?php
-include 'config_include.php';
+include 'functions.php';
 
 $message = "";
 

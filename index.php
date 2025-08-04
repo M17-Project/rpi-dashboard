@@ -1,7 +1,7 @@
 <?php
 
 include 'header.php';
-include 'config_include.php';
+include 'functions.php';
 
 // Read the gateway config file
 $gateway_config = parse_ini_file($config['gateway_config_file'], true);
@@ -39,7 +39,7 @@ function updateStatus() {
                 refCell.style.backgroundColor = "red";
                 modCell.style.backgroundColor = "red";
             } else {
-                refCell.style.backgroundColor = "";
+                refCell.style.backgroundColor = "#B9E2A7";
                 modCell.style.backgroundColor = "";
             }
 
@@ -67,10 +67,11 @@ function updateDashboard() {
                 $('#sms tr:not(:first)').remove();
 
                 data.forEach(function(entry) {
+		    real_call = entry.src.replace(/[^A-Za-z0-9].*$/, '');
                     $('#lastheard').append(
                         `<tr>
                             <td>${entry.time}</td>
-                            <td>${entry.src}</td>
+                            <td class='callsign'><a href="https://www.qrz.com/db/${real_call}" target="_blank">${entry.src}</a></td>
                             <td>${entry.dst}</td>
                             <td>${entry.type}</td>
                             <td>${entry.subtype}</td>
