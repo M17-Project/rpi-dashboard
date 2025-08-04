@@ -12,7 +12,7 @@ header("Pragma: no-cache");
 <div class="header">
 <ul>
   <li><a class="active" href="index.php">Dashboard</a></li>
-  <li><a href="map.php">User Map</a></li>
+  <li><a href="map.php">Map</a></li>
   <li><a href="config_gateway.php">Gateway Config</a></li>
   <li><a href="config_dashboard.php">Dashboard Config</a></li>
   <li><a href="https://m17project.org" target=”_blank”>About</a></li>
