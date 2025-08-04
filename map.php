@@ -12,7 +12,8 @@ include 'config_include.php';
 <!-- Initialize & add OpenStreetMap to HTML element -->
 
 <script>
-const map = L.map('usermap').setView([52.43098341616264, 20.715232454238752], 13);
+//const map = L.map('usermap').setView([52.43098341616264, 20.715232454238752], 13);
+const map = L.map('usermap').setView([0, 0], 2); // World center, zoomed out
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {
     foo: 'bar',
@@ -29,7 +30,7 @@ fetch('get_coordinates.php?count=20')
                 .addTo(map);
 
             marker.on('click', function(mrk) {
-                map.setView([mrk.latlng.lat, mrk.latlng.lng], 16);
+                map.setView([mrk.latlng.lat, mrk.latlng.lng], 6);
             });
         });
     })
