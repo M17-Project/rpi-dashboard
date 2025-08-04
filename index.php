@@ -67,10 +67,11 @@ function updateDashboard() {
                 $('#sms tr:not(:first)').remove();
 
                 data.forEach(function(entry) {
+		    real_call = entry.src.replace(/[^A-Za-z0-9].*$/, '');
                     $('#lastheard').append(
                         `<tr>
                             <td>${entry.time}</td>
-                            <td class='callsign'><a href="https://www.qrz.com/db/${entry.src}" target="_blank">${entry.src}</a></td>
+                            <td class='callsign'><a href="https://www.qrz.com/db/${real_call}" target="_blank">${entry.src}</a></td>
                             <td>${entry.dst}</td>
                             <td>${entry.type}</td>
                             <td>${entry.subtype}</td>
