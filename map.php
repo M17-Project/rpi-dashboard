@@ -5,19 +5,28 @@ include 'config_include.php';
 <!DOCTYPE html>
 <html>
 <?php include 'header.php';?>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- Maplibre GL -->
+<link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
+<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+
+<!-- Maplibre GL Leaflet  -->
+<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js"></script>
+
 <div id="usermap"></div>
 
 <!-- Initialize & add OpenStreetMap to HTML element -->
 
 <script>
+
 const map = L.map('usermap').setView([0, 0], 2); // World center, zoomed out
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {
-    foo: 'bar',
-    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}
-).addTo(map);
+L.maplibreGL({
+  style: 'https://tiles.openfreemap.org/styles/liberty',
+}).addTo(map)
 
 // Fetch coordinates from PHP and add markers
 fetch('get_coordinates.php?count=20')
