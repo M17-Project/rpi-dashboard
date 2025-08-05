@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Restart if requested
     if (isset($_POST['save_restart'])) {
         exec("systemctl restart m17-gateway");
-        $message = "Saved and restarted m17-gateway.";
+        $message = "Initiated restart of m17-gateway.";
     } else {
         $message = "Configuration saved.";
     }
@@ -44,8 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $reflectors = [];
 
 $lines = @file($config['hostfile'], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$lines_custom = @file($config['override_hostfile'], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-foreach ($lines as $line) {
+// Merge both line arrays
+$all_lines = array_merge((array)$lines, (array)$lines_custom);
+
+foreach ($all_lines as $line) {
     $line = trim($line);
 
     // Skip comment lines

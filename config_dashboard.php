@@ -23,6 +23,7 @@ return [
     'gateway_log_file' => '$newDashboardLogFile',
     'gateway_config_file' => '$newNodeConfigFile',
     'hostfile' => 'files/M17Hosts.txt',
+    'override_hostfile' => 'files/OverrideHosts.txt',
     'maxlines' => '$newMaxLines',
     'timezone' => '$newTZ',
 ];

@@ -7,6 +7,7 @@ $defaultConfig = [
     'gateway_log_file' => 'files/dashboard.log',
     'gateway_config_file' => 'files/m17-gateway.ini',
     'hostfile' => 'files/M17Hosts.txt',
+    'override_hostfile' => 'files/OverrideHosts.txt',
     'maxlines' => '15',
     'timezone' => 'UTC',
 ];
