@@ -110,7 +110,7 @@ $(document).ready(function() {
 
     <table id="info_panel">
       <tr>
-        <th colspan="2">Node info</th>
+        <th colspan="2">Node Info</th>
       </tr>
       <tr>
         <td>RX frequency</td>
