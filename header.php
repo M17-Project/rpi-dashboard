@@ -15,8 +15,7 @@ header("Pragma: no-cache");
   <li><a href="map.php">Map</a></li>
   <li><a href="config_gateway.php">Gateway Config</a></li>
   <li><a href="config_dashboard.php">Dashboard Config</a></li>
-  <li><a href="https://m17project.org" target=”_blank”>About</a></li>
-  <li><a href="https://www.paypal.com/donate/?hosted_button_id=4HTHZCS8UYPU6" target=”_blank”>Donate</a></li>
+  <li><a href="help.php">Help</a></li>
 </ul>
 </div>
 <div id="main">
