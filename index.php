@@ -67,7 +67,7 @@ function updateDashboard() {
                 $('#sms tr:not(:first)').remove();
 
                 data.forEach(function(entry) {
-		    real_call = entry.src.replace(/[^A-Za-z0-9].*$/, '');
+                    real_call = entry.src.replace(/[^A-Za-z0-9].*$/, '');
                     $('#lastheard').append(
                         `<tr>
                             <td>${entry.time}</td>
@@ -81,13 +81,13 @@ function updateDashboard() {
                         </tr>`
                     );
 
-		    if (entry.subtype == "Packet" && entry.smsMessage) {
+                    if (entry.subtype == "Packet" && entry.smsMessage) {
                         $('#sms').append(
                             `<tr>
                                 <td><i>${entry.shorttime} ${entry.src} > ${entry.dst}:</i> ${entry.smsMessage}</td>
                             </tr>`
                         );
-	            }
+                    }
                 });
             }
         },
@@ -167,7 +167,6 @@ $(document).ready(function() {
     </table>
   </div>
 </div>
-
 
 <?php include 'footer.php';?>
 

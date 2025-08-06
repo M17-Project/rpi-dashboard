@@ -12,8 +12,7 @@ $processedEntries = [];
 $newEntries = [];
 
 // Read log file
-//$lines = file($logFile, FILE_IGNORE_NEW_LINES);
-$lines = tailFile($logFile, 50);
+$lines = tailFile($logFile, 100);
 
 // Temporary storage for voice start entries
 $voiceStarts = [];
@@ -22,10 +21,10 @@ date_default_timezone_set($timezone);
 
 foreach ($lines as $line) {
     $entry = json_decode($line, true);
-    
+
     // Skip if entry is invalid
     if (!$entry) continue;
-    
+
     // Skip if already processed
     $entryHash = md5($line);
 
@@ -39,7 +38,7 @@ foreach ($lines as $line) {
             }
         }
     }
-    
+
     if ($isProcessed) {
         continue;
     }
@@ -47,11 +46,11 @@ foreach ($lines as $line) {
     // Handle reflector connect/disconnect events
     if ($entry['type'] === 'Reflector') {
         if ($entry['subtype'] === 'Connect') {
-	    $_SESSION['connected_ref'] = $entry['name'];
-	    $_SESSION['connected_mod'] = $entry['module'];
-	} else if ($entry['subtype'] === 'Disconnect') {
-	    $_SESSION['connected_ref'] = "Disconnected";
-	    $_SESSION['connected_mod'] = "-";
+            $_SESSION['connected_ref'] = $entry['name'];
+            $_SESSION['connected_mod'] = $entry['module'];
+        } else if ($entry['subtype'] === 'Disconnect') {
+            $_SESSION['connected_ref'] = "Disconnected";
+            $_SESSION['connected_mod'] = "-";
         }
         continue;
     }
@@ -61,8 +60,8 @@ foreach ($lines as $line) {
     // Special handling for RF type entries
     if ($entry['type'] === 'RF') {
         if ($entry['subtype'] === 'Voice Start') {
-	    $_SESSION['radio_status'] = "RX: ".trim($entry['src']);
-	}
+            $_SESSION['radio_status'] = "RX: ".trim($entry['src']);
+        }
     } else if ($entry['type'] != 'RF' && $entry['subtype'] === 'Voice Start') {
         $_SESSION['radio_status'] = "TX: ". trim($entry['src']);
     } else if ($entry['type'] != 'RF' && $entry['subtype'] === 'Voice End') {
@@ -72,10 +71,9 @@ foreach ($lines as $line) {
     // Handle packet log lines
     if ($entry['subtype'] === 'Packet') {
         if ($startEntry) {
-
-	    if ($entry['type'] === 'RF') {
-		$mer = number_format((float)$entry['mer'], 1, '.', '')."%" ?? NULL;
-	    } else {
+            if ($entry['type'] === 'RF') {
+                $mer = number_format((float)$entry['mer'], 1, '.', '')."%" ?? NULL;
+            } else {
                 $mer = "-";
             }
             // Prepare entry for display
@@ -109,15 +107,15 @@ foreach ($lines as $line) {
     // Handle Voice End
     if ($entry['subtype'] === 'Voice End') {
         $startEntry = $voiceStarts[$entry['src']] ?? null;
-        
+
         if ($startEntry) {
             // Calculate duration
             $startTime = new DateTime($startEntry['time']);
             $endTime = new DateTime($entry['time']);
             $duration = $startTime->diff($endTime)->s;
-	    if ($entry['type'] === 'RF') {
-		$mer = number_format((float)$startEntry['mer'], 1, '.', '')."%" ?? NULL;
-	    } else {
+            if ($entry['type'] === 'RF') {
+                $mer = number_format((float)$startEntry['mer'], 1, '.', '')."%" ?? NULL;
+            } else {
                 $mer = "-";
             }
 
@@ -165,4 +163,3 @@ $processedEntries = array_slice($processedEntries, -100);
 echo json_encode($outputEntries);
 exit;
 ?>
-

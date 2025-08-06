@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Restart if requested
     if (isset($_POST['save_restart'])) {
         exec("systemctl restart m17-gateway");
-        $message = "Saved and restarted m17-gateway.";
+        $message = "Initiated restart of m17-gateway.";
     } else {
         $message = "Configuration saved.";
     }
@@ -44,8 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $reflectors = [];
 
 $lines = @file($config['hostfile'], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$lines_custom = @file($config['override_hostfile'], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-foreach ($lines as $line) {
+// Merge both line arrays
+$all_lines = array_merge((array)$lines, (array)$lines_custom);
+
+foreach ($all_lines as $line) {
     $line = trim($line);
 
     // Skip comment lines
@@ -80,15 +84,15 @@ foreach ($lines as $line) {
         <div class="message"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
     <form method="POST">
-	<table id="config_panel">
-        <?php foreach ($gateway_config as $section => $items): ?>
-	    <tr>
-	    <th colspan="2"><?= htmlspecialchars($section) ?></th>
-	    </tr>
+        <table id="config_panel">
+            <?php foreach ($gateway_config as $section => $items): ?>
+                <tr>
+                    <th colspan="2"><?= htmlspecialchars($section) ?></th>
+                </tr>
                 <?php foreach ($items as $key => $val): ?>
-		    <tr>
+                    <tr>
                         <td><?= htmlspecialchars($key) ?>:</td>
-			<td>
+                        <td>
                         <?php if ($section === 'Reflector' && $key === 'Name'): ?>
                             <select name="<?= $section . '__' . $key ?>" onchange="updateReflectorFields(this)">
                                 <?php foreach ($reflectors as $name => $data): ?>
@@ -106,14 +110,14 @@ foreach ($lines as $line) {
                         <?php else: ?>
                             <input type="text" name="<?= $section . '__' . $key ?>" value="<?= htmlspecialchars($val) ?>">
                         <?php endif; ?>
-			</td>
+                       </td>
                 <?php endforeach; ?>
-		</tr>
-        <?php endforeach; ?>
-	    <tr>
-	    <th colspan="2"><button type="submit" name="save">Save Config</button> &nbsp; &nbsp; <button type="submit" name="save_restart">Restart Gateway</button></th>
-	    </tr>
-	</table>
+                </tr>
+            <?php endforeach; ?>
+            <tr>
+                <th colspan="2"><button type="submit" name="save">Save Config</button> &nbsp; &nbsp; <button type="submit" name="save_restart">Restart Gateway</button></th>
+            </tr>
+        </table>
     </form>
 <?php include 'footer.php';?>
 </body>

@@ -8,7 +8,7 @@ $logFile = $config['gateway_log_file'];
 $locations = [];
 
 // Read log file
-$lines = tailFile($logFile, 100);
+$lines = tailFile($logFile, 1000);
 
 // Function to add new lines with additional info
 // to map marker labels, checks if key is there
@@ -29,21 +29,21 @@ foreach ($lines as $line) {
 
     // Check if the event is of the subtype GNSS
     if ($entry['subtype'] === 'GNSS') {
-	// Delete all previous locations of the current call sign
-	// as we only want to see the latest location
+        // Delete all previous locations of the current call sign
+        // as we only want to see the latest location
         foreach ($locations as $key => $location) {
             if ($location['call'] === $entry['src']) {
                 unset($locations[$key]);
             }
         }
 
-	$locations = array_values($locations);
+        $locations = array_values($locations);
 
-	// Contruct the label that you will see when you click a pin on the map
-	$label = "<b><a href='https://www.qrz.com/db/".$entry['src']."' target=r'_blank'>".$entry['src']."</a></b>"; 
-	$label = $label.addToLabel($entry, 'bearing');
-	$label = $label.addToLabel($entry, 'speed');
-	$label = $label.addToLabel($entry, 'altitude');
+        // Contruct the label that you will see when you click a pin on the map
+        $label = "<b><a href='https://www.qrz.com/db/".$entry['src']."' target=r'_blank'>".$entry['src']."</a></b>"; 
+        $label = $label.addToLabel($entry, 'bearing');
+        $label = $label.addToLabel($entry, 'speed');
+        $label = $label.addToLabel($entry, 'altitude');
 
         // add pin/location to $locations
         $locations[] = [
