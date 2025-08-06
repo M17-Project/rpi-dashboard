@@ -22,7 +22,7 @@ $rxfreq = number_format($rxfreq, 3); // format with 3 decimal places
 
 function updateStatus() {
     // Fetch the current session values from the server
-    fetch('get_status_info.php')
+    fetch('get_status.php')
         .then(response => response.json())
         .then(data => {
             const refCell = document.getElementById("ref");
