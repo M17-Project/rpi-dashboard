@@ -1,6 +1,6 @@
 # rpi-dashboard
 
-![preview](/screenshot.jpg)
+![preview](/img/screenshot.jpg)
 
 A lightweight web-based dashboard for managing and monitoring an **M17 hotspot** based on a **CC1200 HAT**, running on a Raspberry Pi.  
 It pairs with the `m17-gateway` backend to provide real‑time status, logs, and control over the M17 hotspot.
@@ -42,7 +42,7 @@ server {
 
         root /opt/m17/rpi-dashboard;
 
-	index index.php index.html index.htm;
+        index index.php index.html index.htm;
 
         server_name _;
 
@@ -50,9 +50,9 @@ server {
                 try_files $uri $uri/ =404;
         }
 
-	location ~ \.php$ {
-		include snippets/fastcgi-php.conf;
-		fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        location ~ \.php$ {
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass unix:/var/run/php/php-fpm.sock;
         }
 }
 ```
