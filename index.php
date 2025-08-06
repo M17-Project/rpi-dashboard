@@ -70,7 +70,7 @@ function updateDashboard() {
                     real_call = entry.src.replace(/[^A-Za-z0-9].*$/, '');
                     $('#lastheard').append(
                         `<tr>
-                            <td>${entry.time}</td>
+                            <td title="${entry.date}">${entry.time}</td>
                             <td class='callsign'><a href="https://www.qrz.com/db/${real_call}" target="_blank">${entry.src}</a></td>
                             <td>${entry.dst}</td>
                             <td>${entry.type}</td>

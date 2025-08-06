@@ -19,6 +19,8 @@ $voiceStarts = [];
 
 date_default_timezone_set($timezone);
 
+$calls_with_gnss = [];
+
 foreach ($lines as $line) {
     $entry = json_decode($line, true);
 
@@ -68,6 +70,11 @@ foreach ($lines as $line) {
         $_SESSION['radio_status'] = "Listening";
     }
 
+    // Add every call sign which sent GNSS data to an array
+    if ($entry['subtype'] === 'GNSS') {
+        $calls_with_gnss[] = $entry['src'];
+    }
+
     // Handle packet log lines
     if ($entry['subtype'] === 'Packet') {
         if ($startEntry) {
@@ -78,7 +85,8 @@ foreach ($lines as $line) {
             }
             // Prepare entry for display
             $displayEntry = [
-                'time' => date('Y-m-d H:i:s', strtotime($entry['time'])),
+                'time' => date('H:i:s', strtotime($entry['time'])),
+                'date' => date('Y-m-d', strtotime($entry['time'])),
                 'timestamp' => strtotime($entry['time']), // Add timestamp for sorting
                 'shorttime' => date('m-d H:i', strtotime($entry['time'])),
                 'src' => trim($entry['src']),
@@ -119,11 +127,19 @@ foreach ($lines as $line) {
                 $mer = "-";
             }
 
+            // Check if this call sign sent GNSS data and if,
+            // then add a small SAT next to the call sign
+            $call = trim($entry['src']);
+            if (in_array($entry['src'], $calls_with_gnss)) {
+                $call = trim($entry['src'])." &#128752;";
+            }
+
             // Prepare entry for display
             $displayEntry = [
-                'time' => date('Y-m-d H:i:s', strtotime($entry['time'])),
+                'time' => date('H:i:s', strtotime($entry['time'])),
+                'date' => date('Y-m-d', strtotime($entry['time'])),
                 'timestamp' => strtotime($entry['time']), // Add timestamp for sorting
-                'src' => trim($entry['src']),
+                'src' => $call,
                 'dst' => $entry['dst'],
                 'type' => $entry['type'],
                 'subtype' => "Voice",
