@@ -22,7 +22,7 @@ $rxfreq = number_format($rxfreq, 3); // format with 3 decimal places
 
 function updateStatus() {
     // Fetch the current session values from the server
-    fetch('get_status_info.php') 
+    fetch('get_status_info.php')
         .then(response => response.json())
         .then(data => {
             const refCell = document.getElementById("ref");
@@ -97,11 +97,32 @@ function updateDashboard() {
     });
 }
 
+function updateGatewayStatus() {
+    fetch('get_gateway_status.php')
+        .then(response => response.json())
+        .then(data => {
+            const gwCell = document.getElementById("gateway_status");
+
+            // Update the text content of the cells
+            gwCell.textContent = data.status;
+
+            // Change background color based on the status
+            if (gwCell.textContent === "operational") {
+                gwCell.style.backgroundColor = "#B9E2A7";
+            } else {
+                gwCell.style.backgroundColor = "red";
+            }
+        })
+        .catch(error => console.error('Error fetching gateway status:', error));
+}
+
 $(document).ready(function() {
     updateDashboard(); // Initial load
     updateStatus();
+    updateGatewayStatus();
     setInterval(updateStatus, 500);
     setInterval(updateDashboard, 1000);
+    setInterval(updateGatewayStatus, 2000);
 });
 </script>
 
@@ -129,6 +150,10 @@ $(document).ready(function() {
       <tr>
         <td>Callsign (ID)</td>
         <td><?= htmlspecialchars($gateway_config['General']['Callsign']) ?></td>
+      </tr>
+      <tr>
+        <td>Gateway Service</td>
+        <td id="gateway_status"></td>
       </tr>
       <tr>
         <td>Reflector</td>
