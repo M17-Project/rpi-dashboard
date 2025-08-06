@@ -84,15 +84,15 @@ foreach ($all_lines as $line) {
         <div class="message"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
     <form method="POST">
-	<table id="config_panel">
-        <?php foreach ($gateway_config as $section => $items): ?>
-	    <tr>
-	    <th colspan="2"><?= htmlspecialchars($section) ?></th>
-	    </tr>
+        <table id="config_panel">
+            <?php foreach ($gateway_config as $section => $items): ?>
+                <tr>
+                    <th colspan="2"><?= htmlspecialchars($section) ?></th>
+                </tr>
                 <?php foreach ($items as $key => $val): ?>
-		    <tr>
+                    <tr>
                         <td><?= htmlspecialchars($key) ?>:</td>
-			<td>
+                        <td>
                         <?php if ($section === 'Reflector' && $key === 'Name'): ?>
                             <select name="<?= $section . '__' . $key ?>" onchange="updateReflectorFields(this)">
                                 <?php foreach ($reflectors as $name => $data): ?>
@@ -110,14 +110,14 @@ foreach ($all_lines as $line) {
                         <?php else: ?>
                             <input type="text" name="<?= $section . '__' . $key ?>" value="<?= htmlspecialchars($val) ?>">
                         <?php endif; ?>
-			</td>
+                       </td>
                 <?php endforeach; ?>
-		</tr>
-        <?php endforeach; ?>
-	    <tr>
-	    <th colspan="2"><button type="submit" name="save">Save Config</button> &nbsp; &nbsp; <button type="submit" name="save_restart">Restart Gateway</button></th>
-	    </tr>
-	</table>
+                </tr>
+            <?php endforeach; ?>
+            <tr>
+                <th colspan="2"><button type="submit" name="save">Save Config</button> &nbsp; &nbsp; <button type="submit" name="save_restart">Restart Gateway</button></th>
+            </tr>
+        </table>
     </form>
 <?php include 'footer.php';?>
 </body>
