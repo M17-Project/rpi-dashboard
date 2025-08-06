@@ -22,17 +22,19 @@ $rxfreq = number_format($rxfreq, 3); // format with 3 decimal places
 
 function updateStatus() {
     // Fetch the current session values from the server
-    fetch('get_status_info.php') 
+    fetch('get_status.php')
         .then(response => response.json())
         .then(data => {
             const refCell = document.getElementById("ref");
             const modCell = document.getElementById("mod");
             const radioStatusCell = document.getElementById("radio_status");
+            const gwCell = document.getElementById("gateway_status");
 
             // Update the text content of the cells
             refCell.textContent = data.connected_ref;
             modCell.textContent = data.connected_mod;
             radioStatusCell.textContent = data.radio_status;
+            gwCell.textContent = data.gateway_status;
 
             // Change background color based on the status
             if (refCell.textContent === "Disconnected") {
@@ -41,6 +43,11 @@ function updateStatus() {
             } else {
                 refCell.style.backgroundColor = "#B9E2A7";
                 modCell.style.backgroundColor = "";
+            }
+            if (gwCell.textContent === "operational") {
+                gwCell.style.backgroundColor = "#B9E2A7";
+            } else {
+                gwCell.style.backgroundColor = "red";
             }
 
             if (radioStatusCell.textContent.startsWith("TX")) {
@@ -70,7 +77,7 @@ function updateDashboard() {
                     real_call = entry.src.replace(/[^A-Za-z0-9].*$/, '');
                     $('#lastheard').append(
                         `<tr>
-                            <td>${entry.time}</td>
+                            <td title="${entry.date}">${entry.time}</td>
                             <td class='callsign'><a href="https://www.qrz.com/db/${real_call}" target="_blank">${entry.src}</a></td>
                             <td>${entry.dst}</td>
                             <td>${entry.type}</td>
@@ -129,6 +136,10 @@ $(document).ready(function() {
       <tr>
         <td>Callsign (ID)</td>
         <td><?= htmlspecialchars($gateway_config['General']['Callsign']) ?></td>
+      </tr>
+      <tr>
+        <td>Gateway</td>
+        <td id="gateway_status"></td>
       </tr>
       <tr>
         <td>Reflector</td>
