@@ -108,7 +108,7 @@ $(document).ready(function() {
     updateDashboard(); // Initial load
     updateStatus();
     setInterval(updateStatus, 500);
-    setInterval(updateDashboard, 1000);
+    setInterval(updateDashboard, 500);
 });
 </script>
 
