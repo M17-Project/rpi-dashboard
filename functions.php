@@ -13,7 +13,7 @@ $defaultConfig = [
 ];
 
 if (!$_SESSION['radio_status']) {
-    $_SESSION['radio_status'] = "Listening";
+    $_SESSION['radio_status'] = "-";
 }
 
 // Create the config file if it doesn't exist

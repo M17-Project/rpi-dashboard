@@ -58,16 +58,14 @@ foreach ($lines as $line) {
     }
 
     // Construct status string for Radio Status box
-    $_SESSION['radio_status'] = "Listening";
-    // Special handling for RF type entries
-    if ($entry['type'] === 'RF') {
-        if ($entry['subtype'] === 'Voice Start') {
-            $_SESSION['radio_status'] = "RX: ".trim($entry['src']);
-        }
-    } else if ($entry['type'] != 'RF' && $entry['subtype'] === 'Voice Start') {
-        $_SESSION['radio_status'] = "TX: ". trim($entry['src']);
-    } else if ($entry['type'] != 'RF' && $entry['subtype'] === 'Voice End') {
+    if ($entry['subtype'] === 'Voice Start' || $entry['subtype'] === 'Voice End') {
         $_SESSION['radio_status'] = "Listening";
+        // Special handling for RF type entries
+        if ($entry['type'] === 'RF' && $entry['subtype'] === 'Voice Start') {
+                $_SESSION['radio_status'] = "RX: ".trim($entry['src']);
+        } else if ($entry['type'] != 'RF' && $entry['subtype'] === 'Voice Start') {
+            $_SESSION['radio_status'] = "TX: ". trim($entry['src']);
+        }
     }
 
     // Add every call sign which sent GNSS data to an array
