@@ -38,22 +38,22 @@ function updateStatus() {
 
             // Change background color based on the status
             if (refCell.textContent === "Disconnected") {
-                refCell.style.backgroundColor = "red";
-                modCell.style.backgroundColor = "red";
+                refCell.style.backgroundColor = "#fd5e53"; //red
+                modCell.style.backgroundColor = "#fd5e53"; //red
             } else {
-                refCell.style.backgroundColor = "#B9E2A7";
+                refCell.style.backgroundColor = "";
                 modCell.style.backgroundColor = "";
             }
             if (gwCell.textContent === "operational") {
-                gwCell.style.backgroundColor = "#B9E2A7";
+                gwCell.style.backgroundColor = "";
             } else {
-                gwCell.style.backgroundColor = "red";
+                gwCell.style.backgroundColor = "#fd5e53"; //red
             }
 
             if (radioStatusCell.textContent.startsWith("TX")) {
-                radioStatusCell.style.backgroundColor = "red";
+                radioStatusCell.style.backgroundColor = "#fd5e53"; //red
             } else if (radioStatusCell.textContent.startsWith("RX")) {
-                radioStatusCell.style.backgroundColor = "green";
+                radioStatusCell.style.backgroundColor = "#d0f0c0"; //green
             } else {
                 radioStatusCell.style.backgroundColor = "";
             }
