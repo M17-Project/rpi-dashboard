@@ -62,7 +62,7 @@ PHP;
                 $command = '/usr/bin/cat files/M17Hosts.txt';
                 break;
             case 'updatehostfile':
-                $command = '/usr/bin/curl https://hostfiles.refcheck.radio/M17Hosts.txt -o files/M17Hosts.txt';
+                $command = '/usr/bin/curl https://hostfiles.refcheck.radio/M17Hosts.txt -o files/M17Hosts.txt -A "rpi-dashboard Hostfile Updater"';
                 break;
             case 'log':
                 $command = '/usr/bin/tail -n 30 '.htmlspecialchars($config['gateway_log_file']);
