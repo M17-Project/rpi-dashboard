@@ -77,11 +77,18 @@ include 'header.php';
     <ul>
         <li><b>Q: How do I update the dashboard and/or m17-gateway?</b><br>
             <b>A:</b> It is highly recommended to download and execute the <a href="https://github.com/M17-Project/cc1200-hotspot-installer" target="_blank">CC1200 Hotspot Installer</a>. This script not only installs all necessary software but also updates it.</li>
+
         <li><b>Q: Why are some stations not showing up on the map page?</b><br>
             <b>A:</b> Stations need to send their location via the M17 network in order to appear on the map. Only radios with a GPS module and a firmware that supports this can send this data out of the box.<br>
 
         <li><b>Q: How do I switch to another reflector or module?</b><br>
             <b>A:</b> Go to the "Gateway Config" page, select the new reflector and module via the two drop down boxes, save the changes and restart m17-gateway.</li>
+
+        <li><b>Q: How can I restart the M17 Gateway from the command line?</b><br>
+            <b>A:</b> <i>sudo systemctl start/stop/restart m17-gateway.service</i></li>
+
+        <li><b>Q: Where are all the files located that have been installed by the cc1200-hotspot-installer?</b><br>
+            <b>A:</b> You will find these files in <i>/opt/m17/</i></li>
 
         <li><b>Q: How do I contribute to the project?</b><br>
             <b>A:</b> Fork the repository on GitHub, create a feature branch, and submit a pull request. Contributions are welcome!</li>
