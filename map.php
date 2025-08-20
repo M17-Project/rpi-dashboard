@@ -1,16 +1,13 @@
 <?php
 include 'functions.php';
-
+include 'header.php';
 ?>
-<!DOCTYPE html>
-<html>
-<?php include 'header.php';?>
 <!-- Leaflet -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <!-- Maplibre GL -->
-<link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
+<link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet">
 <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
 
 <!-- Maplibre GL Leaflet  -->
@@ -43,8 +40,6 @@ include 'functions.php';
         })
         .catch(error => console.error('Error fetching locations:', error));
 </script>
-
-</div>
 
 <?php include 'footer.php';?>
 

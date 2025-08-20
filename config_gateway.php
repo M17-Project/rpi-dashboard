@@ -65,10 +65,8 @@ foreach ($all_lines as $line) {
         $reflectors[$name] = ['address' => $addr, 'port' => $port];
     }
 }
+include 'header.php';
 ?>
-<!DOCTYPE html>
-<html>
-<?php include 'header.php';?>
     <script>
         const reflectorMap = <?= json_encode($reflectors) ?>;
         function updateReflectorFields(select) {

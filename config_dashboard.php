@@ -87,12 +87,10 @@ PHP;
 $timezones = DateTimeZone::listIdentifiers();
 $timezone = $config['timezone'];
 
-?>
-<!DOCTYPE html>
-<html>
-<?php include 'header.php';?>
+include 'header.php';
 
-<?php if (!empty($message)) echo "<div class='message'>$message</div>"; ?>
+if (!empty($message)) echo "<div class='message'>$message</div>";
+?>
 
 <div class="config-panel-container">
 <div class="config-panel-wrapper">

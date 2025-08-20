@@ -1,12 +1,6 @@
 <?php
-
 include 'header.php';
-
 ?>
-
-<!DOCTYPE html>
-<html>
-
     <h2>Overview of the Hotspot Dashboard</h2>
 
     <h3>Dashboard Page</h3>
@@ -108,7 +102,7 @@ include 'header.php';
         <li><a href="https://github.com/M17-Project/rpi-dashboard" target="_blank">M17 Dashboard GitHub Repository</a></li>
         <li><a href="https://github.com/M17-Project" target="_blank">M17 Project GitHub Organization</a></li>
     </ul>
-</div>
+
 <?php include 'footer.php';?>
 
 </body>
