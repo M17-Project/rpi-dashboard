@@ -10,12 +10,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newNodeConfigFile = $_POST['gateway_config_file'] ?? $config['gateway_config_file'];
     $newMaxLines = $_POST['maxlines'] ?? $config['maxlines'];
     $newTZ = $_POST['timezone'] ?? $config['timezone'];
+    $newMapMarkerTTL = $_POST['map_marker_ttl'] ?? $config['map_marker_ttl'];
+    $newUnitSystem = $_POST['unit_system'] ?? $config['unit_system'];
 
     // Safely escape input for use in PHP code
     $newDashboardLogFile = addslashes($newDashboardLogFile);
     $newNodeConfigFile = addslashes($newNodeConfigFile);
     $newMaxLines = addslashes($newMaxLines);
     $newTZ = addslashes($newTZ);
+    $newMapMarkerTTL = addslashes($newMapMarkerTTL);
+    $newUnitSystem = addslashes($newUnitSystem);
 
     $newConfig = <<<PHP
 <?php
@@ -26,6 +30,8 @@ return [
     'override_hostfile' => 'files/OverrideHosts.txt',
     'maxlines' => '$newMaxLines',
     'timezone' => '$newTZ',
+    'map_marker_ttl' => '$newMapMarkerTTL',
+    'unit_system' => '$newUnitSystem'
 ];
 PHP;
 
@@ -115,15 +121,27 @@ $timezone = $config['timezone'];
     <tr>
         <td>Timezone</td>
         <td>
-    <select name="timezone" id="timezone">
-        <?php foreach ($timezones as $tz): ?>
-            <option value="<?= htmlspecialchars($tz) ?>" <?= $tz === $timezone ? 'selected' : '' ?>>
-                <?= htmlspecialchars($tz) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-	</tz>
+        <select name="timezone" id="timezone">
+            <?php foreach ($timezones as $tz): ?>
+                <option value="<?= htmlspecialchars($tz) ?>" <?= $tz === $timezone ? 'selected' : '' ?>> <?= htmlspecialchars($tz) ?> </option>
+            <?php endforeach; ?>
+        </select>
+       </td>
         <td>Timezone to be used in the dashboard</td>
+    </tr>
+    <tr>
+        <td>Unit System</td>
+        <td>
+        <select name="unit_system" id="unit_system">
+            <option value="imperial" <?= "imperial" === htmlspecialchars($config['unit_system']) ? 'selected' : '' ?>>Imperial</option>
+            <option value="metric" <?= "metric" === htmlspecialchars($config['unit_system']) ? 'selected' : '' ?>>Metric</option>
+        </select>
+        <td>Show metric or imperial units.</td>
+    </tr>
+    <tr>
+        <td>Map Marker TTL</td>
+        <td><input type="text" id="map_marker_ttl" name="map_marker_ttl" value="<?= htmlspecialchars($config['map_marker_ttl']) ?>" required></td>
+        <td>Defines how many minutes after the last transmission the position of a station is still displayed on the map.</td>
     </tr>
     <tr>
         <th colspan="3"><input name="save_config" type="submit" value="Save Configuration"></th>

@@ -91,7 +91,7 @@ function updateDashboard() {
                     if (entry.subtype == "Packet" && entry.smsMessage) {
                         $('#sms').append(
                             `<tr>
-                                <td><i>${entry.shorttime} ${entry.src} > ${entry.dst}:</i> ${entry.smsMessage}</td>
+                                <td><i>${entry.time} ${entry.src} > ${entry.dst}:</i> ${entry.smsMessage}</td>
                             </tr>`
                         );
                     }
