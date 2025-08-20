@@ -39,11 +39,14 @@ foreach ($lines as $line) {
 
         $locations = array_values($locations);
 
+        $time = date('d/m/Y H:i', strtotime($entry['time']));
+
         // Contruct the label that you will see when you click a pin on the map
         $label = "<b><a href='https://www.qrz.com/db/".$entry['src']."' target=r'_blank'>".$entry['src']."</a></b>"; 
         $label = $label.addToLabel($entry, 'bearing', '°');
         $label = $label.addToLabel($entry, 'speed', ' km/h');
         $label = $label.addToLabel($entry, 'altitude', ' m');
+        $label = $label."<br>Time: ".$time;
 
         // add pin/location to $locations
         $locations[] = [
