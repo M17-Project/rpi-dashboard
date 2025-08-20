@@ -11,6 +11,8 @@ $processedEntries = [];
 // Track new entries to return
 $newEntries = [];
 
+$unit_system = $config['unit_system'];
+
 // Read log file
 $lines = tailFile($logFile, 100);
 
@@ -68,6 +70,14 @@ foreach ($lines as $line) {
         }
     }
 
+    $dt = new DateTime($entry['time']);
+    if ($unit_system == "metric") {
+        $time = $dt->format('d.m.y H:i');
+    } else {
+        $time = $dt->format('m/d/y h:i A');
+    }
+
+
     // Add every call sign which sent GNSS data to an array
     if ($entry['subtype'] === 'GNSS') {
         $calls_with_gnss[] = $entry['src'];
@@ -83,10 +93,8 @@ foreach ($lines as $line) {
             }
             // Prepare entry for display
             $displayEntry = [
-                'time' => date('H:i:s', strtotime($entry['time'])),
-                'date' => date('Y-m-d', strtotime($entry['time'])),
+                'time' => $time,
                 'timestamp' => strtotime($entry['time']), // Add timestamp for sorting
-                'shorttime' => date('m-d H:i', strtotime($entry['time'])),
                 'src' => trim($entry['src']),
                 'dst' => $entry['dst'],
                 'type' => $entry['type'],
@@ -134,8 +142,7 @@ foreach ($lines as $line) {
 
             // Prepare entry for display
             $displayEntry = [
-                'time' => date('H:i:s', strtotime($entry['time'])),
-                'date' => date('Y-m-d', strtotime($entry['time'])),
+                'time' => $time,
                 'timestamp' => strtotime($entry['time']), // Add timestamp for sorting
                 'src' => $call,
                 'dst' => $entry['dst'],

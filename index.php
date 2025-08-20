@@ -15,8 +15,6 @@ $rxfreq = $rxfreq / 1000000; // convert to MHz
 $rxfreq = number_format($rxfreq, 3); // format with 3 decimal places
 ?>
 
-<!DOCTYPE html>
-<html>
 <script src="jquery-3.7.1.min.js"></script>
 <script>
 
@@ -91,7 +89,7 @@ function updateDashboard() {
                     if (entry.subtype == "Packet" && entry.smsMessage) {
                         $('#sms').append(
                             `<tr>
-                                <td><i>${entry.shorttime} ${entry.src} > ${entry.dst}:</i> ${entry.smsMessage}</td>
+                                <td><i>${entry.time} ${entry.src} > ${entry.dst}:</i> ${entry.smsMessage}</td>
                             </tr>`
                         );
                     }
@@ -158,7 +156,6 @@ $(document).ready(function() {
     <table class="dashboard" id="sms">
       <tr>
         <th>Text Messages</th>
-      </tr>
       </tr>
     </table>
   </div>

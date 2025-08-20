@@ -1,12 +1,6 @@
 <?php
-
 include 'header.php';
-
 ?>
-
-<!DOCTYPE html>
-<html>
-
     <h2>Overview of the Hotspot Dashboard</h2>
 
     <h3>Dashboard Page</h3>
@@ -62,6 +56,8 @@ include 'header.php';
         <li><b>M17 Gateway Configuration File:</b> Location of the m17-gateway configuration file. This path is relative to the document root of the underlying web server and is a symlink to the actual file (default: files/m17-gateway.ini)</li>
         <li><b>Max. Number of Lines:</b> The maximum number of lines displayed in the "Last Heard" table of the dashboard (default: 15)</li>
         <li><b>Timezone:</b> Drop down box with all possible time zones. This will change the time displayed in the dashboard's last heard list (default: UTC)</li>
+        <li><b>Unit System:</b> Drop down box with 'Imperial' and 'Metric'. This will change how dates, times and others will be displayed/calculated  (default: Metric)</li>
+        <li><b>Map Marker TTL:</b> Defines how many minutes after the last transmission the position of a station is still displayed on the map. (default: 43200 (30 days))</li>
     </ul>
     <p>
         You can furthermore execute a few selected operating system commands via the following buttons:
@@ -106,7 +102,7 @@ include 'header.php';
         <li><a href="https://github.com/M17-Project/rpi-dashboard" target="_blank">M17 Dashboard GitHub Repository</a></li>
         <li><a href="https://github.com/M17-Project" target="_blank">M17 Project GitHub Organization</a></li>
     </ul>
-</div>
+
 <?php include 'footer.php';?>
 
 </body>

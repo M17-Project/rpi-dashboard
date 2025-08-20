@@ -10,6 +10,8 @@ $defaultConfig = [
     'override_hostfile' => 'files/OverrideHosts.txt',
     'maxlines' => '15',
     'timezone' => 'UTC',
+    'unit_system' => 'metric',
+    'map_marker_ttl' => '43200',
 ];
 
 if (!$_SESSION['radio_status']) {
