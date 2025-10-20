@@ -68,7 +68,23 @@ PHP;
                 $command = '/usr/bin/cat files/M17Hosts.txt';
                 break;
             case 'updatehostfile':
-                $command = '/usr/bin/curl https://hostfiles.refcheck.radio/M17Hosts.txt -o files/M17Hosts.txt -A "rpi-dashboard Hostfile Updater"';
+                $url  = 'https://hostfiles.refcheck.radio/M17Hosts.txt';
+                $dest = __DIR__ . '/files/M17Hosts.txt';
+                [$ok, $msg, $status, $hdrs, $attempts] = update_hostfile_with_retries($url, $dest, 'rpi-dashboard Hostfile Updater');
+
+                $rateBits = [];
+                foreach (['x-ratelimit-limit','x-ratelimit-remaining','x-ratelimit-reset','retry-after'] as $h) {
+                    if (isset($hdrs[$h])) $rateBits[] = strtoupper($h) . ': ' . $hdrs[$h];
+                }
+                $meta = $rateBits ? ("\n" . implode("\n", $rateBits)) : '';
+                $commandOutput = sprintf(
+                    "%s\nHTTP status: %s\nAttempts: %d%s",
+                    $msg,
+                    $status ?: 'n/a',
+                    $attempts,
+                    $meta
+                );
+                $command = '';
                 break;
             case 'log':
                 $command = '/usr/bin/tail -n 30 '.htmlspecialchars($config['gateway_log_file']);
