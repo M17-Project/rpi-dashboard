@@ -3,9 +3,6 @@
 include 'header.php';
 include 'functions.php';
 
-// Fetch the gateway's version
-$gateway_version = trim(shell_exec("dpkg -s m17-gateway | grep '^Version:' | cut -d' ' -f2"));
-
 // Read the gateway config file
 $gateway_config = parse_ini_file($config['gateway_config_file'], true);
 
@@ -115,19 +112,6 @@ $(document).ready(function() {
 
 <div class="db-container">
   <div class="db-left-column">
-
-    <table class="info_panel">
-      <col style="width:50%">
-      <col style="width:50%">
-      <tr>
-        <th colspan="2">Gateway Info</th>
-      </tr>
-      <tr>
-        <td>Version</td>
-        <td><?= htmlspecialchars($gateway_version) ?></td>
-      </tr>
-    </table>
-
     <table class="info_panel">
       <tr>
         <th colspan="2">Node Info</th>

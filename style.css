@@ -47,6 +47,18 @@
     padding: 14px 16px;
     text-decoration: none;
 }
+
+.header li.right {
+  float: right;
+}
+
+.header li span.static {
+  display: block;
+  color: white;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 14px 16px;
+}
   
 /* Change the link color to #111 (black) on hover */
 .header li a:hover{
