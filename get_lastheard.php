@@ -126,11 +126,11 @@ foreach ($lines as $line) {
             // Calculate duration
             $startTime = new DateTime($startEntry['time']);
             $endTime = new DateTime($entry['time']);
-            $duration = $startTime->diff($endTime)->s;
+            $duration = $endTime->getTimestamp() - $startTime->getTimestamp();
             if ($entry['type'] === 'RF') {
                 $mer = number_format((float)$startEntry['mer'], 1, '.', '')."%" ?? NULL;
             } else {
-                $mer = "-";
+                $mer = "&ndash;&nbsp;&nbsp;&nbsp;";
             }
 
             // Check if this call sign sent GNSS data and if,

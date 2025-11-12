@@ -81,8 +81,8 @@ function updateDashboard() {
                             <td>${entry.type}</td>
                             <td>${entry.subtype}</td>
                             <td>${entry.can}</td>
-                            <td>${entry.mer || 'N/A'}</td>
-                            <td>${entry.duration}</td>
+                            <td class="ralign">${entry.mer || 'N/A'}</td>
+                            <td class="ralign">${entry.duration}</td>
                         </tr>`
                     );
 
@@ -168,8 +168,8 @@ $(document).ready(function() {
         <th>Interface</th>
         <th>Type</th>
         <th>CAN</th>
-        <th>MER</th>
-        <th>Duration</th>
+        <th class="ralign">MER</th>
+        <th class="ralign">Duration</th>
       </tr>
     </table>
   </div>
