@@ -158,6 +158,10 @@ input[type="text"] {
     text-decoration: underline;
 }
 
+.ralign {
+    text-align: right;
+}
+
 #main {
     position: absolute;
     top: 70px;
