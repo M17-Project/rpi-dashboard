@@ -73,6 +73,18 @@ function updateDashboard() {
 
                 data.forEach(function(entry) {
                     real_call = entry.src.replace(/[^A-Za-z0-9].*$/, '');
+                    
+                    let merValue = parseFloat(entry.mer);
+                    let merColor;
+
+                    if (merValue > 10) {
+                        merColor = 'red';
+                    } else if (merValue > 5) {
+                        merColor = 'orange';
+                    } else {
+                        merColor = 'green';
+                    }
+                    
                     $('#lastheard').append(
                         `<tr>
                             <td title="${entry.date}">${entry.time}</td>
@@ -81,7 +93,7 @@ function updateDashboard() {
                             <td>${entry.type}</td>
                             <td>${entry.subtype}</td>
                             <td>${entry.can}</td>
-                            <td class="ralign">${entry.mer || 'N/A'}</td>
+                            <td class="ralign" style="color:${merColor}">${entry.mer || 'N/A'}</td>
                             <td class="ralign">${entry.duration}</td>
                         </tr>`
                     );

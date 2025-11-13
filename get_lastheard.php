@@ -87,7 +87,7 @@ foreach ($lines as $line) {
     if ($entry['subtype'] === 'Packet') {
         if ($startEntry) {
             if ($entry['type'] === 'RF') {
-                $mer = number_format((float)$entry['mer'], 1, '.', '')."%" ?? NULL;
+                $mer = number_format((float)$entry['mer'], 1, '.', '')." %" ?? NULL;
             } else {
                 $mer = "-";
             }
@@ -127,8 +127,20 @@ foreach ($lines as $line) {
             $startTime = new DateTime($startEntry['time']);
             $endTime = new DateTime($entry['time']);
             $duration = $endTime->getTimestamp() - $startTime->getTimestamp();
+            $hours = floor($duration / 3600);
+            $minutes = floor(($duration % 3600) / 60);
+            $seconds = $duration % 60;
+
+            if ($hours > 0) {
+                $formattedDuration = sprintf("%d h %d m %d s", $hours, $minutes, $seconds);
+            } else if ($minutes > 0) {
+                $formattedDuration = sprintf("%d m %d s", $minutes, $seconds);
+            } else {
+                $formattedDuration = sprintf("%d s", $seconds);
+            }
+            
             if ($entry['type'] === 'RF') {
-                $mer = number_format((float)$startEntry['mer'], 1, '.', '')."%" ?? NULL;
+                $mer = number_format((float)$startEntry['mer'], 1, '.', '')." %" ?? NULL;
             } else {
                 $mer = "&ndash;&nbsp;&nbsp;&nbsp;";
             }
@@ -150,7 +162,7 @@ foreach ($lines as $line) {
                 'subtype' => "Voice",
                 'can' => $entry['can'],
                 'mer' => $mer,
-                'duration' => $duration." sec",
+                'duration' => $formattedDuration,
                 'hash' => $entryHash
             ];
 
