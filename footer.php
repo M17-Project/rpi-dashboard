@@ -1,4 +1,9 @@
-</div>
+<?php ?>
+</main>
 <div class="footer">
-    <p>M17 Dashboard by SP5WWP, N1ADJ &amp; DK1MI<br><a href="https://m17project.org/">M17 Project</a> - <a href="https://www.paypal.com/donate/?hosted_button_id=4HTHZCS8UYPU6">Donate</a></p>
+  <div class="footer-left">
+    M17 Dashboard by SP5WWP, N1ADJ & DK1MI | m17-gateway <?php echo trim(shell_exec("dpkg -s m17-gateway | grep '^Version:' | cut -d' ' -f2")); ?>
+  </div>
 </div>
+</body>
+</html>

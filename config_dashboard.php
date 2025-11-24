@@ -1,188 +1,77 @@
 <?php
 include 'functions.php';
-
 $message = "";
-
-// Handle form submission to update config
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['save_config'])) {
-    $newDashboardLogFile = $_POST['gateway_log_file'] ?? $config['gateway_log_file'];
-    $newNodeConfigFile = $_POST['gateway_config_file'] ?? $config['gateway_config_file'];
-    $newMaxLines = $_POST['maxlines'] ?? $config['maxlines'];
-    $newTZ = $_POST['timezone'] ?? $config['timezone'];
-    $newMapMarkerTTL = $_POST['map_marker_ttl'] ?? $config['map_marker_ttl'];
-    $newUnitSystem = $_POST['unit_system'] ?? $config['unit_system'];
-
-    // Safely escape input for use in PHP code
-    $newDashboardLogFile = addslashes($newDashboardLogFile);
-    $newNodeConfigFile = addslashes($newNodeConfigFile);
-    $newMaxLines = addslashes($newMaxLines);
-    $newTZ = addslashes($newTZ);
-    $newMapMarkerTTL = addslashes($newMapMarkerTTL);
-    $newUnitSystem = addslashes($newUnitSystem);
-
-    $newConfig = <<<PHP
-<?php
-return [
-    'gateway_log_file' => '$newDashboardLogFile',
-    'gateway_config_file' => '$newNodeConfigFile',
-    'hostfile' => 'files/M17Hosts.txt',
-    'override_hostfile' => 'files/OverrideHosts.txt',
-    'maxlines' => '$newMaxLines',
-    'timezone' => '$newTZ',
-    'map_marker_ttl' => '$newMapMarkerTTL',
-    'unit_system' => '$newUnitSystem'
-];
-PHP;
-
-
-    // Write new configuration
-    file_put_contents($configFile, $newConfig);
-
-    // Invalidate PHP opcode cache
-    if (function_exists('opcache_invalidate')) {
-        opcache_invalidate($configFile, true);
-    }
-
-    // Re-load updated config
-    $config = include $configFile;
-    $message = "Configuration updated successfully.";
-
-    } elseif (isset($_POST['run_command'])) {
-        $selectedCommand = $_POST['run_command'];
-
-        switch ($selectedCommand) {
-            case 'status':
-                $command = '/usr/bin/systemctl status m17-gateway.service';
-                break;
-            case 'start':
-                $command = '/usr/bin/systemctl start m17-gateway.service';
-                break;
-            case 'stop':
-                $command = '/usr/bin/systemctl stop m17-gateway.service';
-                break;
-            case 'restart':
-                $command = '/usr/bin/systemctl restart m17-gateway.service';
-                break;
-            case 'showhostfile':
-                $command = '/usr/bin/cat files/M17Hosts.txt';
-                break;
-            case 'updatehostfile':
-                $command = '/usr/bin/curl https://hostfiles.refcheck.radio/M17Hosts.txt -o files/M17Hosts.txt -A "rpi-dashboard Hostfile Updater"';
-                break;
-            case 'log':
-                $command = '/usr/bin/tail -n 30 '.htmlspecialchars($config['gateway_log_file']);
-                break;
-            default:
-                $command = '';
-        }
-
-        if ($command) {
-            $commandOutput = shell_exec($command);
-        }
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config'])) {
+    foreach (['gateway_log_file','gateway_config_file','maxlines','sms_max','timezone','unit_system','map_marker_ttl'] as $k)
+        if(isset($_POST[$k])) $config[$k] = $_POST[$k];
+    $cfg = "<?php\nreturn " . var_export($config,true) . ";";
+    file_put_contents($configFile,$cfg);
+    if(function_exists('opcache_invalidate')) opcache_invalidate($configFile,true);
+    $message="Configuration saved.";
 }
-
-// Get all time zones
-$timezones = DateTimeZone::listIdentifiers();
-$timezone = $config['timezone'];
-
+if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['run_command'])){
+    $cmd=$_POST['run_command'];
+    $map=[
+        'status'=>'systemctl status m17-gateway.service',
+        'start'=>'systemctl start m17-gateway.service',
+        'stop'=>'systemctl stop m17-gateway.service',
+        'restart'=>'systemctl restart m17-gateway.service',
+        'log'=>'tail -n 30 '.$config['gateway_log_file'],
+        'showhostfile'=>'cat files/M17Hosts.txt',
+        'updatehostfile'=>'curl https://hostfiles.refc....txt -o files/M17Hosts.txt -A "rpi-dashboard"'
+    ];
+    if(isset($map[$cmd])) $commandOutput=shell_exec($map[$cmd]);
+}
+$timezones=DateTimeZone::listIdentifiers();
+$page='config_dash';
 include 'header.php';
-
-if (!empty($message)) echo "<div class='message'>$message</div>";
 ?>
-
-<div class="config-panel-container">
-<div class="config-panel-wrapper">
-
+<div class="page-content">
+<?php if($message):?><div class="card"><p><?=htmlspecialchars($message)?></p></div><?php endif;?>
+<div class="card">
+<h2>Dashboard Configuration</h2>
 <form method="post">
-    <table id="config_panel">
-
-    <tr>
-        <th colspan="3">Dashboard Configuration</th>
-    </tr>
-    <tr>
-        <td>M17 Gateway Log File</td>
-        <td><input type="text" id="gateway_log_file" name="gateway_log_file" value="<?= htmlspecialchars($config['gateway_log_file']) ?>" required></td>
-        <td>Location of the log file generated by m17-gateway</td>
-    </tr>
-    <tr>
-        <td>M17 Gateway Configuration File</td>
-        <td><input type="text" id="gateway_config_file" name="gateway_config_file" value="<?= htmlspecialchars($config['gateway_config_file']) ?>" required></td>
-        <td>Location of the m17-gateway configuration file</td>
-    </tr>
-    <tr>
-        <td>Max. Number of Lines</td>
-        <td><input type="text" id="maxlines" name="maxlines" value="<?= htmlspecialchars($config['maxlines']) ?>" required></td>
-        <td>The maximum number of lines displayed in the "Last Heard" table of the dashboard</td>
-    </tr>
-    <tr>
-        <td>Timezone</td>
-        <td>
-        <select name="timezone" id="timezone">
-            <?php foreach ($timezones as $tz): ?>
-                <option value="<?= htmlspecialchars($tz) ?>" <?= $tz === $timezone ? 'selected' : '' ?>> <?= htmlspecialchars($tz) ?> </option>
-            <?php endforeach; ?>
-        </select>
-       </td>
-        <td>Timezone to be used in the dashboard</td>
-    </tr>
-    <tr>
-        <td>Unit System</td>
-        <td>
-        <select name="unit_system" id="unit_system">
-            <option value="imperial" <?= "imperial" === htmlspecialchars($config['unit_system']) ? 'selected' : '' ?>>Imperial</option>
-            <option value="metric" <?= "metric" === htmlspecialchars($config['unit_system']) ? 'selected' : '' ?>>Metric</option>
-        </select>
-        <td>Show metric or imperial units.</td>
-    </tr>
-    <tr>
-        <td>Map Marker TTL</td>
-        <td><input type="text" id="map_marker_ttl" name="map_marker_ttl" value="<?= htmlspecialchars($config['map_marker_ttl']) ?>" required></td>
-        <td>Defines how many minutes after the last transmission the position of a station is still displayed on the map.</td>
-    </tr>
-    <tr>
-        <th colspan="3"><input name="save_config" type="submit" value="Save Configuration"></th>
-    </tr>
-    </table>
+<div class="form-grid-2col">
+<div class="form-field"><label>M17 Gateway Log File</label><input class="input" name="gateway_log_file" value="<?=htmlspecialchars($config['gateway_log_file'])?>"></div>
+<div class="form-field"><label>M17 Gateway Configuration File</label><input class="input" name="gateway_config_file" value="<?=htmlspecialchars($config['gateway_config_file'])?>"></div>
+<div class="form-field"><label>Max. Number of Lines</label><input class="input" type="number" name="maxlines" value="<?=htmlspecialchars($config['maxlines'])?>"></div>
+<div class="form-field"><label>Max. SMS Messages</label><input class="input" type="number" name="sms_max" value="<?=htmlspecialchars($config['sms_max'])?>"></div>
+<div class="form-field"><label>Timezone</label>
+<select class="input" name="timezone">
+<?php foreach($timezones as $tz):?>
+<option value="<?=$tz?>" <?=$tz==$config['timezone']?'selected':''?>><?=$tz?></option>
+<?php endforeach;?>
+</select></div>
+<div class="form-field"><label>Unit System</label>
+<select class="input" name="unit_system">
+<option value="imperial" <?=$config['unit_system']=='imperial'?'selected':''?>>Imperial</option>
+<option value="metric" <?=$config['unit_system']=='metric'?'selected':''?>>Metric</option>
+</select></div>
+<div class="form-field"><label>Map Marker TTL</label><input class="input" type="number" name="map_marker_ttl" value="<?=htmlspecialchars($config['map_marker_ttl'])?>"></div>
+</div>
+<div style="margin-top:20px;"><button type="submit" name="save_config" class="btn-primary">Save</button></div>
 </form>
 </div>
-
-
-<div class="config-panel-wrapper">
-<form method="post" style="display: flex; gap: 10px; flex-wrap: wrap;">
-    <table id="config_panel">
-    <tr>
-        <th colspan="2">Execute Commands</th>
-    </tr>
-    <tr>
-        <td>M17 Gateway Service</td>
-        <td><button type="submit" name="run_command" value="status">Status</button>
-        <button type="submit" name="run_command" value="start">Start</button>
-        <button type="submit" name="run_command" value="stop">Stop</button>
-        <button type="submit" name="run_command" value="restart">Restart</button></td>
-    </tr>
-    <tr>
-        <td>M17 Gateway Raw Log</td>
-        <td><button type="submit" name="run_command" value="log">Show Log</button></td>
-    </tr>
-    <tr>
-        <td>Show Hostfile</td>
-        <td><button type="submit" name="run_command" value="showhostfile">Show Hostfile</button></td>
-    </tr>
-    <tr>
-        <td>Update Hostfile</td>
-        <td><button type="submit" name="run_command" value="updatehostfile">Update Hostfile</button></td>
-    </tr>
-    </table>
+<div class="card">
+<h2>Gateway Control</h2>
+<form method="post">
+<div class="form-grid-2col">
+<div class="form-field"><label>M17 Gateway Service</label><br>
+<button class="btn-secondary" name="run_command" value="status">Status</button>
+<button class="btn-secondary" name="run_command" value="start">Start</button>
+<button class="btn-secondary" name="run_command" value="stop">Stop</button>
+<button class="btn-secondary" name="run_command" value="restart">Restart</button>
+</div>
+<div class="form-field"><label>Diagnostics</label><br>
+<button class="btn-secondary" name="run_command" value="log">Show Log</button>
+<button class="btn-secondary" name="run_command" value="showhostfile">Show Hostfile</button>
+<button class="btn-secondary" name="run_command" value="updatehostfile">Update Hostfile</button>
+</div>
+</div>
 </form>
 </div>
+<?php if(!empty($commandOutput)):?>
+<div class="card"><h2>Command Output</h2><pre><?=htmlspecialchars($commandOutput)?></pre></div>
+<?php endif;?>
 </div>
-
-<?php if (!empty($commandOutput)): ?>
-    <h3>Command Output:</h3>
-    <pre><?= htmlspecialchars($commandOutput) ?></pre>
-<?php endif; ?>
-<?php include 'footer.php';?>
-</body>
-</html>
+<?php include 'footer.php'; ?>

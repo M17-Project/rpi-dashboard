@@ -6,117 +6,79 @@ $gateway_config = parse_ini_file($config['gateway_config_file'], true, INI_SCANN
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $updated = $gateway_config;
+
     foreach ($_POST as $key => $value) {
         // Skip non-config fields (e.g., submit buttons)
-        if (in_array($key, ['save', 'save_restart'])) continue;
+        if (in_array($key, ['save', 'save_restart'])) {
+            continue;
+        }
 
         // Match "Section__Key" format using regex
         if (preg_match('/^([a-zA-Z0-9_]+)__(.+)$/', $key, $matches)) {
             $section = $matches[1];
-            $item = $matches[2];
-            $gateway_config[$section][$item] = $value;
-        } else {
-            error_log("Ignored POST key: $key");
+            $item    = $matches[2];
+
+            if (!isset($updated[$section])) {
+                $updated[$section] = [];
+            }
+
+            // Store value as-is (raw), but strip newlines
+            $value = str_replace(["\r", "\n"], ' ', $value);
+            $updated[$section][$item] = $value;
         }
     }
 
-    // Save the updated INI
-    $output = "";
-    foreach ($gateway_config as $section => $settings) {
-        $output .= "[$section]\n";
-        foreach ($settings as $k => $v) {
-            $output .= "$k=$v\n";
+    // Write updated configuration back to the INI file
+    $content = '';
+    foreach ($updated as $section => $pairs) {
+        $content .= '[' . $section . "]\n";
+        foreach ($pairs as $k => $v) {
+            $content .= $k . ' = ' . $v . "\n";
         }
-        $output .= "\n";
+        $content .= "\n";
     }
-    file_put_contents($config['gateway_config_file'], $output);
 
-    // Restart if requested
+    file_put_contents($config['gateway_config_file'], $content);
+
+    // Optionally restart the gateway service
     if (isset($_POST['save_restart'])) {
-        exec("systemctl restart m17-gateway");
-        $message = "Initiated restart of m17-gateway.";
-    } else {
-        $message = "Configuration saved.";
+        @shell_exec('systemctl restart m17-gateway');
     }
+
+    // Reload config for display
+    $gateway_config = parse_ini_file($config['gateway_config_file'], true, INI_SCANNER_RAW);
 }
 
-// Load reflector list
-$reflectors = [];
-
-$lines = @file($config['hostfile'], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-$lines_custom = @file($config['override_hostfile'], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
-// Merge both line arrays
-$all_lines = array_merge((array)$lines, (array)$lines_custom);
-
-foreach ($all_lines as $line) {
-    $line = trim($line);
-
-    // Skip comment lines
-    if ($line === '' || $line[0] === '#') continue;
-
-    // Split by any whitespace (space or tab)
-    $parts = preg_split('/\s+/', $line);
-
-    if (count($parts) >= 3) {
-        $name = trim($parts[0]);
-        $addr = trim($parts[1]);
-        $port = trim($parts[2]);
-        $reflectors[$name] = ['address' => $addr, 'port' => $port];
-    }
-}
+$page = 'config_gw';
 include 'header.php';
 ?>
-    <script>
-        const reflectorMap = <?= json_encode($reflectors) ?>;
-        function updateReflectorFields(select) {
-            const val = select.value;
-            if (reflectorMap[val]) {
-                document.getElementsByName('Reflector__Address')[0].value = reflectorMap[val].address;
-                document.getElementsByName('Reflector__Port')[0].value = reflectorMap[val].port;
-            }
-        }
-    </script>
+<div class="page-content">
+  <div class="card">
+    <h2>Gateway Configuration</h2>
 
-    <?php if (isset($message)): ?>
-        <div class="message"><?= htmlspecialchars($message) ?></div>
-    <?php endif; ?>
     <form method="POST">
-        <table id="config_panel">
-            <?php foreach ($gateway_config as $section => $items): ?>
-                <tr>
-                    <th colspan="2"><?= htmlspecialchars($section) ?></th>
-                </tr>
-                <?php foreach ($items as $key => $val): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($key) ?>:</td>
-                        <td>
-                        <?php if ($section === 'Reflector' && $key === 'Name'): ?>
-                            <select name="<?= $section . '__' . $key ?>" onchange="updateReflectorFields(this)">
-                                <?php foreach ($reflectors as $name => $data): ?>
-                                    <option value="<?= htmlspecialchars($name) ?>" <?= ($val === $name ? 'selected' : '') ?>>
-                                        <?= htmlspecialchars($name) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        <?php elseif ($section === 'Reflector' && $key === 'Module'): ?>
-                            <select name="<?= $section . '__' . $key ?>">
-                                <?php foreach (range('A', 'Z') as $letter): ?>
-                                    <option value="<?= $letter ?>" <?= ($val === $letter ? 'selected' : '') ?>><?= $letter ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        <?php else: ?>
-                            <input type="text" name="<?= $section . '__' . $key ?>" value="<?= htmlspecialchars($val) ?>">
-                        <?php endif; ?>
-                       </td>
-                <?php endforeach; ?>
-                </tr>
-            <?php endforeach; ?>
-            <tr>
-                <th colspan="2"><button type="submit" name="save">Save Config</button> &nbsp; &nbsp; <button type="submit" name="save_restart">Restart Gateway</button></th>
-            </tr>
-        </table>
+      <div class="form-grid-2col">
+        <?php foreach ($gateway_config as $section => $pairs): ?>
+          <?php foreach ($pairs as $key => $val): ?>
+            <div class="form-field">
+              <label><?php echo htmlspecialchars($section . ' / ' . $key); ?></label>
+              <input
+                class="input"
+                type="text"
+                name="<?php echo htmlspecialchars($section . '__' . $key); ?>"
+                value="<?php echo htmlspecialchars($val); ?>"
+              >
+            </div>
+          <?php endforeach; ?>
+        <?php endforeach; ?>
+      </div>
+
+      <div class="floating-actions">
+        <button type="submit" name="save" class="btn-secondary">Save</button>
+        <button type="submit" name="save_restart" class="btn-primary">Save &amp; Restart</button>
+      </div>
     </form>
-<?php include 'footer.php';?>
-</body>
-</html>
+  </div>
+</div>
+<?php include 'footer.php'; ?>

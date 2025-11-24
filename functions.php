@@ -9,6 +9,7 @@ $defaultConfig = [
     'hostfile' => 'files/M17Hosts.txt',
     'override_hostfile' => 'files/OverrideHosts.txt',
     'maxlines' => '15',
+	'sms_max' => '20',
     'timezone' => 'UTC',
     'unit_system' => 'metric',
     'map_marker_ttl' => '43200',

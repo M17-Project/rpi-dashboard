@@ -1,47 +1,33 @@
 <?php
-include 'functions.php';
+$page = 'map';
 include 'header.php';
 ?>
-<!-- Leaflet -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<div class="cards">
+  <section class="card" style="width:100%;height:600px;position:relative;">
+    <h2>Node Map</h2>
+    <div id="map" style="height:540px;border-radius:12px;"></div>
+  </section>
+</div>
 
-<!-- Maplibre GL -->
-<link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet">
-<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
-
-<!-- Maplibre GL Leaflet  -->
-<script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js"></script>
-
-<div id="usermap"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <script>
-    const map = L.map('usermap').setView([0, 0], 2); // World center, zoomed out
+var map = L.map('map').setView([20,0], 2);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:18
+}).addTo(map);
 
-    L.maplibreGL({
-      style: 'https://tiles.openfreemap.org/styles/liberty',
-    }).addTo(map)
-
-    // Fetch coordinates from PHP and add markers
-    fetch('get_coordinates.php')
-        .then(response => response.json())
-        .then(locations => {
-            locations.forEach((loc) => {
-                if (loc.lat != 0 && loc.lng !=0) {
-                    const marker = L.marker([loc.lat, loc.lng])
-                        .bindPopup(loc.label)
-                        .addTo(map);
-
-                    marker.on('click', function(mrk) {
-                        map.setView([mrk.latlng.lat, mrk.latlng.lng], 6);
-                    });
-                }
-            });
-        })
-        .catch(error => console.error('Error fetching locations:', error));
+fetch('get_coordinates.php')
+  .then(r=>r.json())
+  .then(data=>{
+    if(!Array.isArray(data)) return;
+    data.forEach(p=>{
+      if(!p.lat || !p.lon) return;
+      L.marker([p.lat, p.lon]).addTo(map)
+       .bindPopup(`<strong>${p.callsign||''}</strong><br>${p.location||''}`);
+    });
+});
 </script>
 
-<?php include 'footer.php';?>
-
-</body>
-</html>
+<?php include 'footer.php'; ?>

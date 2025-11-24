@@ -1,193 +1,70 @@
 <?php
-
+$page = 'dashboard';
 include 'header.php';
+
 include 'functions.php';
-
-// Read the gateway config file
 $gateway_config = parse_ini_file($config['gateway_config_file'], true);
-
-$txfreq = $gateway_config['Radio']['TXFrequency'];
-$txfreq = $txfreq / 1000000; // convert to MHz
-$txfreq = number_format($txfreq, 3); // format with 3 decimal places
-
-$rxfreq = $gateway_config['Radio']['RXFrequency'];
-$rxfreq = $rxfreq / 1000000; // convert to MHz
-$rxfreq = number_format($rxfreq, 3); // format with 3 decimal places
+$txfreq = number_format($gateway_config['Radio']['TXFrequency']/1000000,3);
+$rxfreq = number_format($gateway_config['Radio']['RXFrequency']/1000000,3);
 ?>
-
-<script src="jquery-3.7.1.min.js"></script>
+<div class="cards">
+<section class="card"><h2>Node Info</h2>
+<p>RX frequency <strong><?php echo $rxfreq; ?> MHz</strong></p>
+<p>TX frequency <strong><?php echo $txfreq; ?> MHz</strong></p>
+<p>Power <strong>0 dBm</strong></p>
+</section>
+<section class="card"><h2>Gateway status</h2>
+<p>Callsign <strong id="gw_callsign"><?php echo $gateway_config['General']['Callsign'] ?? 'N/A'; ?></strong></p>
+<p>Gateway <strong id="gw_status" class="status-good">Operational</strong></p>
+<p>Reflector <strong id="gw_ref">N/A</strong></p>
+<p>Module <strong id="gw_mod">N/A</strong></p>
+<p>Radio Status <strong id="gw_radio" class="status-good">Listening</strong></p>
+</section></div>
+<h2>Recent activity</h2>
+<div class="table-card"><table id="lastheard">
+<thead><tr>
+<th>Time</th><th>Source</th><th>Destination</th><th>Interface</th>
+<th>Type</th><th>CAN</th><th>MER</th><th>Duration</th>
+</tr></thead><tbody></tbody></table></div>
 <script>
+function updateStatus(){fetch('get_status.php').then(r=>r.json()).then(d=>{
+if(!d)return;
+let g=document.getElementById('gw_status');
+let r=document.getElementById('gw_radio');
+document.getElementById('gw_ref').textContent=d.connected_ref||'N/A';
+document.getElementById('gw_mod').textContent=d.connected_mod||'N/A';
+r.textContent=d.radio_status||'Unknown';
+g.textContent=d.gateway_status||'Unknown';
+g.className=(g.textContent.toLowerCase()==='operational')?'status-good':'status-bad';
+r.className=(r.textContent.toLowerCase()==='listening')?'status-good':'status-bad';
+});}
 
-function updateStatus() {
-    // Fetch the current session values from the server
-    fetch('get_status.php')
-        .then(response => response.json())
-        .then(data => {
-            const refCell = document.getElementById("ref");
-            const modCell = document.getElementById("mod");
-            const radioStatusCell = document.getElementById("radio_status");
-            const gwCell = document.getElementById("gateway_status");
-
-            // Update the text content of the cells
-            refCell.textContent = data.connected_ref;
-            modCell.textContent = data.connected_mod;
-            radioStatusCell.textContent = data.radio_status;
-            gwCell.textContent = data.gateway_status;
-
-            // Change background color based on the status
-            if (refCell.textContent === "Disconnected") {
-                refCell.style.backgroundColor = "#fd5e53"; //red
-                modCell.style.backgroundColor = "#fd5e53"; //red
-            } else {
-                refCell.style.backgroundColor = "";
-                modCell.style.backgroundColor = "";
-            }
-            if (gwCell.textContent === "operational") {
-                gwCell.style.backgroundColor = "";
-            } else {
-                gwCell.style.backgroundColor = "#fd5e53"; //red
-            }
-
-            if (radioStatusCell.textContent.startsWith("TX")) {
-                radioStatusCell.style.backgroundColor = "#fd5e53"; //red
-            } else if (radioStatusCell.textContent.startsWith("RX")) {
-                radioStatusCell.style.backgroundColor = "#d0f0c0"; //green
-            } else {
-                radioStatusCell.style.backgroundColor = "";
-            }
-        })
-        .catch(error => console.error('Error fetching session values:', error));
-}
-
-function updateDashboard() {
-    $.ajax({
-        url: 'get_lastheard.php',
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            // Only update if there are new entries
-            if (data && data.length > 0) {
-                // Clear existing table rows except the header
-                $('#lastheard tr:not(:first)').remove();
-                $('#sms tr:not(:first)').remove();
-
-                data.forEach(function(entry) {
-                    real_call = entry.src.replace(/[^A-Za-z0-9].*$/, '');
-                    
-                    let merValue = parseFloat(entry.mer);
-                    let merColor;
-
-                    if (merValue > 10) {
-                        merColor = 'red';
-                    } else if (merValue > 5) {
-                        merColor = 'orange';
-                    } else {
-                        merColor = 'green';
-                    }
-                    
-                    $('#lastheard').append(
-                        `<tr>
-                            <td title="${entry.date}">${entry.time}</td>
-                            <td class='callsign'><a href="https://www.qrz.com/db/${real_call}" target="_blank">${entry.src}</a></td>
-                            <td>${entry.dst}</td>
-                            <td>${entry.type}</td>
-                            <td>${entry.subtype}</td>
-                            <td>${entry.can}</td>
-                            <td class="ralign" style="color:${merColor}">${entry.mer || 'N/A'}</td>
-                            <td class="ralign">${entry.duration}</td>
-                        </tr>`
-                    );
-
-                    if (entry.subtype == "Packet" && entry.smsMessage) {
-                        $('#sms').append(
-                            `<tr>
-                                <td><i>${entry.time} ${entry.src} > ${entry.dst}:</i> ${entry.smsMessage}</td>
-                            </tr>`
-                        );
-                    }
-                });
-            }
-        },
-        error: function() {
-            console.error('Failed to fetch dashboard data');
-        }
-    });
-}
-
-$(document).ready(function() {
-    updateDashboard(); // Initial load
-    updateStatus();
-    setInterval(updateStatus, 500);
-    setInterval(updateDashboard, 500);
+function updateDashboard(){
+$.getJSON('get_lastheard.php',data=>{
+let b=$('#lastheard tbody');b.empty();
+if(!Array.isArray(data))return;
+data.forEach(e=>{
+let rc=e.src?e.src.replace(/[^A-Za-z0-9].*$/,''):'';
+let mer='';
+if(e.iface!=='Internet'&&e.mer!==undefined){
+let v=parseFloat(e.mer);let c='';if(!isNaN(v)){
+if(v<5)c='mer-good';else if(v<10)c='mer-warn';else c='mer-bad';}
+mer=`<td class="${c}">${e.mer}</td>`;
+}else mer='<td></td>';
+b.append(`<tr>
+<td>${e.time||''}</td>
+<td><a href="https://www.qrz.com/db/${rc}" target="_blank">${e.src||''}</a></td>
+<td>${e.dst||''}</td>
+<td>${e.type === "RF" ? "RF" : "Internet"}</td>
+<td>${e.subtype || ''}</td>
+<td>${e.can !== undefined ? e.can : ''}</td>
+${mer}
+<td>${e.duration||''}</td></tr>`);
 });
+});}
+
+$(function(){updateStatus();updateDashboard();
+setInterval(updateStatus,5000);
+setInterval(updateDashboard,5000);});
 </script>
-
-<div class="db-container">
-  <div class="db-left-column">
-    <table class="info_panel">
-      <tr>
-        <th colspan="2">Node Info</th>
-      </tr>
-      <tr>
-        <td>RX frequency</td>
-        <td><?= htmlspecialchars($rxfreq) ?> MHz</td>
-      </tr>
-      <tr>
-        <td>TX frequency</td>
-        <td><?= htmlspecialchars($txfreq) ?> MHz</td>
-      </tr>
-    </table>
-
-    <table class="dashboard" id="info_panel">
-      <tr>
-        <th colspan="2">M17 Status</th>
-      </tr>
-      <tr>
-        <td>Callsign (ID)</td>
-        <td><?= htmlspecialchars($gateway_config['General']['Callsign']) ?></td>
-      </tr>
-      <tr>
-        <td>Gateway</td>
-        <td id="gateway_status"></td>
-      </tr>
-      <tr>
-        <td>Reflector</td>
-        <td id="ref">N/A</td>
-      </tr>
-      <tr>
-        <td>Module</td>
-        <td id="mod">N/A</td>
-      </tr>
-      <tr>
-        <td>Radio Status</td>
-        <td id="radio_status">Listening</td>
-      </tr>
-    </table>
-
-    <table class="dashboard" id="sms">
-      <tr>
-        <th>Text Messages</th>
-      </tr>
-    </table>
-  </div>
-
-  <div class="db-right-column">
-    <table class="dashboard" id="lastheard">
-      <tr>
-        <th>Time</th>
-        <th>Source</th>
-        <th>Destination</th>
-        <th>Interface</th>
-        <th>Type</th>
-        <th>CAN</th>
-        <th class="ralign">MER</th>
-        <th class="ralign">Duration</th>
-      </tr>
-    </table>
-  </div>
-</div>
-
-<?php include 'footer.php';?>
-
-</body>
-</html>
+<?php include 'footer.php'; ?>

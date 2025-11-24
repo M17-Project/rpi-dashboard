@@ -1,4 +1,5 @@
 <?php
+$page='help';
 include 'header.php';
 ?>
     <h2>Overview of the Hotspot Dashboard</h2>
