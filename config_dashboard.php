@@ -32,46 +32,46 @@ include 'header.php';
 <h2>Dashboard configuration</h2>
 <form method="post">
 <div class="form-grid-2col">
-<div class="form-field"><label>M17 Gateway Log File</label><input class="input" name="gateway_log_file" value="<?=htmlspecialchars($config['gateway_log_file'])?>"></div>
-<div class="form-field"><label>M17 Gateway Configuration File</label><input class="input" name="gateway_config_file" value="<?=htmlspecialchars($config['gateway_config_file'])?>"></div>
-<div class="form-field"><label>Max. Number of Lines</label><input class="input" type="number" name="maxlines" value="<?=htmlspecialchars($config['maxlines'])?>"></div>
-<div class="form-field"><label>Max. SMS Messages</label><input class="input" type="number" name="sms_max" value="<?=htmlspecialchars($config['sms_max'])?>"></div>
+<div class="form-field"><label>M17 Gateway log file</label><input class="input" name="gateway_log_file" value="<?=htmlspecialchars($config['gateway_log_file'])?>"></div>
+<div class="form-field"><label>M17 Gateway configuration file</label><input class="input" name="gateway_config_file" value="<?=htmlspecialchars($config['gateway_config_file'])?>"></div>
+<div class="form-field"><label>Max. "Recent activity" entries</label><input class="input" type="number" name="maxlines" value="<?=htmlspecialchars($config['maxlines'])?>"></div>
+<div class="form-field"><label>Max. text messages</label><input class="input" type="number" name="sms_max" value="<?=htmlspecialchars($config['sms_max'])?>"></div>
 <div class="form-field"><label>Timezone</label>
 <select class="input" name="timezone">
 <?php foreach($timezones as $tz):?>
 <option value="<?=$tz?>" <?=$tz==$config['timezone']?'selected':''?>><?=$tz?></option>
 <?php endforeach;?>
 </select></div>
-<div class="form-field"><label>Unit System</label>
+<div class="form-field"><label>Unit system</label>
 <select class="input" name="unit_system">
 <option value="imperial" <?=$config['unit_system']=='imperial'?'selected':''?>>Imperial</option>
 <option value="metric" <?=$config['unit_system']=='metric'?'selected':''?>>Metric</option>
 </select></div>
-<div class="form-field"><label>Map Marker TTL</label><input class="input" type="number" name="map_marker_ttl" value="<?=htmlspecialchars($config['map_marker_ttl'])?>"></div>
+<div class="form-field"><label>Map marker TTL</label><input class="input" type="number" name="map_marker_ttl" value="<?=htmlspecialchars($config['map_marker_ttl'])?>"></div>
 </div>
 <div style="margin-top:20px;"><button type="submit" name="save_config" class="btn-primary">Save</button></div>
 </form>
 </div>
 <div class="card">
-<h2>Gateway Control</h2>
+<h2>Gateway control</h2>
 <form method="post">
 <div class="form-grid-2col">
-<div class="form-field"><label>M17 Gateway Service</label><br>
+<div class="form-field"><label>M17 Gateway service</label><br>
 <button class="btn-secondary" name="run_command" value="status">Status</button>
 <button class="btn-secondary" name="run_command" value="start">Start</button>
 <button class="btn-secondary" name="run_command" value="stop">Stop</button>
 <button class="btn-secondary" name="run_command" value="restart">Restart</button>
 </div>
 <div class="form-field"><label>Diagnostics</label><br>
-<button class="btn-secondary" name="run_command" value="log">Show Log</button>
-<button class="btn-secondary" name="run_command" value="showhostfile">Show Hostfile</button>
-<button class="btn-secondary" name="run_command" value="updatehostfile">Update Hostfile</button>
+<button class="btn-secondary" name="run_command" value="log">Show log</button>
+<button class="btn-secondary" name="run_command" value="showhostfile">Show hostfile</button>
+<button class="btn-secondary" name="run_command" value="updatehostfile">Update hostfile</button>
 </div>
 </div>
 </form>
 </div>
 <?php if(!empty($commandOutput)):?>
-<div class="card"><h2>Command Output</h2><pre><?=htmlspecialchars($commandOutput)?></pre></div>
+<div class="card"><h2>Command output</h2><pre><?=htmlspecialchars($commandOutput)?></pre></div>
 <?php endif;?>
 </div>
 <?php include 'footer.php'; ?>
