@@ -3,7 +3,7 @@ $page='messages'; include 'header.php';
 $cfg=include 'config.php';
 $sms_max = $cfg['sms_max'] ?? 20;
 ?>
-<h2>Text Messages</h2>
+<h2>Text messages</h2>
 <div class="table-card">
 <table id="sms">
 <thead><tr><th>Time</th><th>From</th><th>To</th><th>Message</th></tr></thead>

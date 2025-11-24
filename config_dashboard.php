@@ -29,7 +29,7 @@ include 'header.php';
 <div class="page-content">
 <?php if($message):?><div class="card"><p><?=htmlspecialchars($message)?></p></div><?php endif;?>
 <div class="card">
-<h2>Dashboard Configuration</h2>
+<h2>Dashboard configuration</h2>
 <form method="post">
 <div class="form-grid-2col">
 <div class="form-field"><label>M17 Gateway Log File</label><input class="input" name="gateway_log_file" value="<?=htmlspecialchars($config['gateway_log_file'])?>"></div>

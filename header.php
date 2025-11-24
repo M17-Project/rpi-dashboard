@@ -32,9 +32,9 @@ $page = $page ?? '';
 
     <a href="index.php" class="<?php echo ($page=='dashboard')?'active':'';?>"><span class="icon">🏠</span>Dashboard</a>
     <a href="map.php" class="<?php echo ($page=='map')?'active':'';?>"><span class="icon">🗺️</span>Map</a>
-    <a href="config_gateway.php" class="<?php echo ($page=='config_gw')?'active':'';?>"><span class="icon">⚙️</span>Gateway Config</a>
-    <a href="config_dashboard.php" class="<?php echo ($page=='config_dash')?'active':'';?>"><span class="icon">🧩</span>Dashboard Config</a>
-    <a href="messages.php" class="<?php echo ($page=='messages')?'active':'';?>"><span class="icon">💬</span>Text Messages</a>
+    <a href="config_gateway.php" class="<?php echo ($page=='config_gw')?'active':'';?>"><span class="icon">⚙️</span>Gateway config</a>
+    <a href="config_dashboard.php" class="<?php echo ($page=='config_dash')?'active':'';?>"><span class="icon">🧩</span>Dashboard config</a>
+    <a href="messages.php" class="<?php echo ($page=='messages')?'active':'';?>"><span class="icon">💬</span>Text messages</a>
     <a href="help.php" class="<?php echo ($page=='help')?'active':'';?>"><span class="icon">❓</span>Help</a>
   
     <div class="sidebar-theme">

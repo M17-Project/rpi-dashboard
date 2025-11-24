@@ -55,7 +55,7 @@ include 'header.php';
 ?>
 <div class="page-content">
   <div class="card">
-    <h2>Gateway Configuration</h2>
+    <h2>Gateway configuration</h2>
 
     <form method="POST">
       <div class="form-grid-2col">

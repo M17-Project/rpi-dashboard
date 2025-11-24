@@ -4,7 +4,7 @@ include 'header.php';
 ?>
 <div class="cards">
   <section class="card" style="width:100%;height:600px;position:relative;">
-    <h2>Node Map</h2>
+    <h2>Last heard stations map</h2>
     <div id="map" style="height:540px;border-radius:12px;"></div>
   </section>
 </div>

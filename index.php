@@ -8,7 +8,7 @@ $txfreq = number_format($gateway_config['Radio']['TXFrequency']/1000000,3);
 $rxfreq = number_format($gateway_config['Radio']['RXFrequency']/1000000,3);
 ?>
 <div class="cards">
-<section class="card"><h2>Node Info</h2>
+<section class="card"><h2>Transceiver info</h2>
 <p>RX frequency <strong><?php echo $rxfreq; ?> MHz</strong></p>
 <p>TX frequency <strong><?php echo $txfreq; ?> MHz</strong></p>
 <p>Power <strong>0 dBm</strong></p>
@@ -18,7 +18,7 @@ $rxfreq = number_format($gateway_config['Radio']['RXFrequency']/1000000,3);
 <p>Gateway <strong id="gw_status" class="status-good">Operational</strong></p>
 <p>Reflector <strong id="gw_ref">N/A</strong></p>
 <p>Module <strong id="gw_mod">N/A</strong></p>
-<p>Radio Status <strong id="gw_radio" class="status-good">Listening</strong></p>
+<p>State <strong id="gw_radio" class="status-good">Listening</strong></p>
 </section></div>
 <h2>Recent activity</h2>
 <div class="table-card"><table id="lastheard">
@@ -31,10 +31,10 @@ function updateStatus(){fetch('get_status.php').then(r=>r.json()).then(d=>{
 if(!d)return;
 let g=document.getElementById('gw_status');
 let r=document.getElementById('gw_radio');
-document.getElementById('gw_ref').textContent=d.connected_ref||'N/A';
-document.getElementById('gw_mod').textContent=d.connected_mod||'N/A';
-r.textContent=d.radio_status||'Unknown';
-g.textContent=d.gateway_status||'Unknown';
+document.getElementById('gw_ref').textContent=d.connected_ref||'-';
+document.getElementById('gw_mod').textContent=d.connected_mod||'-';
+r.textContent=d.radio_status.toLowerCase()||'Unknown';
+g.textContent=d.gateway_status||'unknown';
 g.className=(g.textContent.toLowerCase()==='operational')?'status-good':'status-bad';
 r.className=(r.textContent.toLowerCase()==='listening')?'status-good':'status-bad';
 });}
