@@ -33,7 +33,7 @@ let g=document.getElementById('gw_status');
 let r=document.getElementById('gw_radio');
 document.getElementById('gw_ref').textContent=d.connected_ref||'-';
 document.getElementById('gw_mod').textContent=d.connected_mod||'-';
-r.textContent=d.radio_status.toLowerCase()||'Unknown';
+r.textContent=d.radio_status||'Unknown';
 g.textContent=d.gateway_status||'unknown';
 g.className=(g.textContent.toLowerCase()==='operational')?'status-good':'status-bad';
 r.className=(r.textContent.toLowerCase()==='listening')?'status-good':'status-bad';
