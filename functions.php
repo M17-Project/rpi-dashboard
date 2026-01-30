@@ -15,8 +15,8 @@ $defaultConfig = [
     'map_marker_ttl' => '43200',
 ];
 
-if (!$_SESSION['radio_status']) {
-    $_SESSION['radio_status'] = "-";
+if (!isset($_SESSION['radio_status'])) {
+    $_SESSION['radio_status'] = 'Listening';
 }
 
 // Create the config file if it doesn't exist

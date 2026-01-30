@@ -22,7 +22,6 @@ function updateSMS(){
        msgs.push(e);
      }
    });
-   msgs.reverse();
    msgs = msgs.slice(0, sms_max);
    msgs.forEach(e=>{
      rows += `<tr>

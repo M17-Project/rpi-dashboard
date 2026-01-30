@@ -15,10 +15,10 @@ $rxfreq = number_format($gateway_config['Radio']['RXFrequency']/1000000,3);
 </section>
 <section class="card"><h2>Gateway status</h2>
 <p>Callsign <strong id="gw_callsign"><?php echo $gateway_config['General']['Callsign'] ?? 'N/A'; ?></strong></p>
-<p>Gateway <strong id="gw_status" class="status-good">Operational</strong></p>
-<p>Reflector <strong id="gw_ref">N/A</strong></p>
-<p>Module <strong id="gw_mod">N/A</strong></p>
-<p>State <strong id="gw_radio" class="status-good">Listening</strong></p>
+<p>Gateway <strong id="gw_status" class="status-good"></strong></p>
+<p>Reflector <strong id="gw_ref"></strong></p>
+<p>Module <strong id="gw_mod"></strong></p>
+<p>Radio state <strong id="gw_radio" class="status-good"></strong></p>
 </section></div>
 <h2>Recent activity</h2>
 <div class="table-card"><table id="lastheard">
@@ -33,9 +33,9 @@ let g=document.getElementById('gw_status');
 let r=document.getElementById('gw_radio');
 document.getElementById('gw_ref').textContent=d.connected_ref||'-';
 document.getElementById('gw_mod').textContent=d.connected_mod||'-';
-r.textContent=d.radio_status||'Unknown';
+r.textContent=d.radio_status||'unknown';
 g.textContent=d.gateway_status||'unknown';
-g.className=(g.textContent.toLowerCase()==='operational')?'status-good':'status-bad';
+g.className=(g.textContent.toLowerCase()==='running')?'status-good':'status-bad';
 r.className=(r.textContent.toLowerCase()==='listening')?'status-good':'status-bad';
 });}
 
