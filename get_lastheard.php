@@ -23,6 +23,8 @@ date_default_timezone_set($timezone);
 
 $calls_with_gnss = [];
 
+$startEntry = null;
+
 foreach ($lines as $line) {
     $entry = json_decode($line, true);
 
@@ -85,7 +87,7 @@ foreach ($lines as $line) {
 
     // Handle packet log lines
     if ($entry['subtype'] === 'Packet') {
-        if ($startEntry) {
+        /*if ($startEntry)*/ {
             if ($entry['type'] === 'RF') {
                 $mer = number_format((float)$entry['mer'], 1, '.', '')." %" ?? NULL;
             } else {
