@@ -13,45 +13,53 @@ include 'header.php';
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <script>
+const markers = {};
+
 const smallIcon = L.icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-
-  iconSize:     [16, 26], // default is [25, 41]
-  iconAnchor:   [8, 26],
-  popupAnchor:  [0, -26],
-  shadowSize:   [26, 26]
+  iconSize: [16, 26],
+  iconAnchor: [8, 26],
+  popupAnchor: [0, -26],
+  shadowSize: [26, 26]
 });
 
 var map = L.map('map').setView([20,0], 2);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    maxZoom:18
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18
 }).addTo(map);
 
-fetch('get_coordinates.php')
-  .then(r => r.json())
-  .then(data => {
-    if (!Array.isArray(data)) return;
+const markersLayer = L.layerGroup().addTo(map);
 
-    const bounds = [];
+function updateMap() {
+  fetch('get_coordinates.php')
+    .then(r => r.json())
+    .then(data => {
+      if (!Array.isArray(data)) return;
 
-    data.forEach(p => {
-      const lat = Number(p.lat);
-      const lon = Number(p.lon);
-      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+      data.forEach(p => {
+        const lat = Number(p.lat);
+        const lon = Number(p.lon);
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
 
-      bounds.push([lat, lon]);
+        const key = p.callsign || `${lat},${lon}`;
 
-      L.marker([lat, lon], { icon: smallIcon })
-        .addTo(map)
-        .bindPopup(p.location || '');
+        if (markers[key]) {
+          // update position + popup text
+          markers[key].setLatLng([lat, lon]);
+          markers[key].setPopupContent(p.location || '');
+        } else {
+          // create new marker
+          markers[key] = L.marker([lat, lon], { icon: smallIcon })
+            .addTo(map)
+            .bindPopup(p.location || '');
+        }
+      });
     });
+}
 
-    //sounds good in theory, but for a single QSO, it looks ridiculous
-    /*if (bounds.length) {
-      map.fitBounds(bounds, { padding: [30, 30] });
-    }*/
-  });
+updateMap();
+setInterval(updateMap, 2000); // pull every 2 seconds
 </script>
 
 <?php include 'footer.php'; ?>

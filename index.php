@@ -64,7 +64,7 @@ ${mer}
 });}
 
 $(function(){updateStatus();updateDashboard();
-setInterval(updateStatus,5000);
-setInterval(updateDashboard,5000);});
+setInterval(updateStatus,2000);
+setInterval(updateDashboard,2000);});
 </script>
 <?php include 'footer.php'; ?>
