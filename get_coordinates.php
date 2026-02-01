@@ -33,6 +33,7 @@ function addToLabel($e, $key, $unit_metric, $unit_imperial, $system){
 
 foreach ($lines as $line) {
     $entry = json_decode($line, true);
+	if (!$entry || !isset($entry['time'], $entry['src'])) continue;
 
     $dt = new DateTime($entry['time']);
     $timestamp = $dt->getTimestamp();
@@ -70,9 +71,9 @@ foreach ($lines as $line) {
         // add pin/location to $locations
         $locations[] = [
             'lat' => $entry['latitude'],
-            'lng' => $entry['longitude'],
-            'call' => $entry['src'],
-            'label' => $label
+            'lon' => $entry['longitude'],
+            'callsign' => $entry['src'],
+            'location' => $label
         ];
     }
 }
