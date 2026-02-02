@@ -1,6 +1,8 @@
 <?php
 session_start();
 
+define('DASHBOARD_VERSION', trim(@file_get_contents(__DIR__ . '/VERSION')) ?: 'dev');
+
 $configFile = 'config.php';
 
 $defaultConfig = [

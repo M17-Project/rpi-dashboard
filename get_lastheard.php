@@ -187,10 +187,11 @@ usort($newEntries, function($a, $b) {
 $newEntries = array_slice($newEntries, 0, $maxlines);
 
 // Remove timestamp from output
-$outputEntries = array_map(function($entry) {
+/*$outputEntries = array_map(function($entry) {
     unset($entry['timestamp']);
     return $entry;
-}, $newEntries);
+}, $newEntries);*/
+$outputEntries = $newEntries;
 
 // Limit processed entries to prevent file growth
 $processedEntries = array_slice($processedEntries, -100);

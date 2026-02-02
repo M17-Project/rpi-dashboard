@@ -44,22 +44,40 @@ $.getJSON('get_lastheard.php',data=>{
 let b=$('#lastheard tbody');b.empty();
 if(!Array.isArray(data))return;
 data.forEach(e=>{
-let rc=e.src?e.src.replace(/[^A-Za-z0-9].*$/,''):'';
-let mer='';
-if(e.iface!=='Internet'&&e.mer!==undefined){
-let v=parseFloat(e.mer);let c='';if(!isNaN(v)){
-if(v<5)c='mer-good';else if(v<10)c='mer-warn';else c='mer-bad';}
-mer=`<td class="${c}">${e.mer}</td>`;
-}else mer='<td></td>';
+let rc = e.src ? e.src.replace(/[^A-Za-z0-9].*$/, '') : '';
+let iface = e.type === 'RF' ? 'RF' : 'Internet';
+
+let mer = '<td></td>';
+if (iface === 'RF' && Number.isFinite(parseFloat(e.mer))) {
+  let v = parseFloat(e.mer);
+  let c = v < 5 ? 'mer-good' : v < 10 ? 'mer-warn' : 'mer-bad';
+  mer = `<td class="${c}">${v.toFixed(1)}</td>`;
+}
+
+if (e.subtype === 'Packet') {
+  b.append(`<tr class="packet">
+    <td>${e.time || ''}</td>
+    <td><a href="https://www.qrz.com/db/${rc}" target="_blank">${e.src || ''}</a></td>
+    <td>${e.dst || ''}</td>
+    <td>${iface}</td>
+    <td>Packet</td>
+    <td>${e.can ?? ''}</td>
+    ${mer}
+	<td></td>
+  </tr>`);
+  return;
+}
+
 b.append(`<tr>
-<td>${e.time||''}</td>
-<td><a href="https://www.qrz.com/db/${rc}" target="_blank">${e.src||''}</a></td>
-<td>${e.dst||''}</td>
-<td>${e.type === "RF" ? "RF" : "Internet"}</td>
-<td>${e.subtype || ''}</td>
-<td>${e.can !== undefined ? e.can : ''}</td>
-${mer}
-<td>${e.duration||''}</td></tr>`);
+  <td>${e.time || ''}</td>
+  <td><a href="https://www.qrz.com/db/${rc}" target="_blank">${e.src || ''}</a></td>
+  <td>${e.dst || ''}</td>
+  <td>${iface}</td>
+  <td>${e.subtype || ''}</td>
+  <td>${e.can ?? ''}</td>
+  ${mer}
+  <td>${e.duration || ''}</td>
+</tr>`);
 });
 });}
 
