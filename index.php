@@ -51,7 +51,7 @@ let mer = '<td></td>';
 if (iface === 'RF' && Number.isFinite(parseFloat(e.mer))) {
   let v = parseFloat(e.mer);
   let c = v < 5 ? 'mer-good' : v < 10 ? 'mer-warn' : 'mer-bad';
-  mer = `<td class="${c}">${v.toFixed(1)}</td>`;
+  mer = `<td class="${c}">${v.toFixed(1)} %</td>`;
 }
 
 if (e.subtype === 'Packet') {

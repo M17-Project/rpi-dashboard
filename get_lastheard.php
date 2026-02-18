@@ -90,7 +90,7 @@ foreach ($lines as $line) {
     if ($entry['subtype'] === 'Packet') {
         /*if ($startEntry)*/ {
             if ($entry['type'] === 'RF') {
-                $mer = number_format((float)$entry['mer'], 1, '.', '')." %" ?? NULL;
+                $mer = number_format((float)$entry['mer'], 1, '.', '') ?? NULL;
             } else {
                 $mer = "-";
             }
