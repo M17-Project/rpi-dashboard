@@ -28,7 +28,7 @@ The UI retrieves data by reading a JSON logfile produced by the m17-gateway.
 
 ### Automatic Installation
 
-These manual steps assume you’ve already installed and configured `m17-gateway` and NGINX + PHP. For full-stack automation, check out the community installation script that sets up everything in one go, including firmware flash, NGINX, PHP‑FPM, and systemd services: [cc1200-hotspot-installer](https://github.com/DK1MI/cc1200-hotspot-installer).
+These manual steps assume you’ve already installed and configured `m17-gateway` and NGINX + PHP. For full-stack automation, check out the community installation script that sets up everything in one go, including firmware flash, NGINX, PHP‑FPM, and systemd services: [m17-hotspot-installer](https://github.com/M17-Project/m17-hotspot-installer).
 
 ### Manual Installation
 
