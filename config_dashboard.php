@@ -18,7 +18,7 @@ if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['run_command'])){
         'restart'=>'systemctl restart m17-gateway.service',
         'log'=>'tail -n 30 '.$config['gateway_log_file'],
         'showhostfile'=>'cat files/M17Hosts.txt',
-        'updatehostfile'=>'curl https://hostfiles.refc....txt -o files/M17Hosts.txt -A "rpi-dashboard"'
+        'updatehostfile'=>'curl "https://m17-project.github.io/hostfiles/M17_Hosts.txt" -o "files/M17Hosts.txt" -z "files/M17Hosts.txt" -A "rpi-dashboard" 2>&1'
     ];
     if(isset($map[$cmd])) $commandOutput=shell_exec($map[$cmd]);
 }
