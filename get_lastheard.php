@@ -143,7 +143,7 @@ foreach ($lines as $line) {
             }
             
             if ($entry['type'] === 'RF') {
-                $mer = number_format((float)$startEntry['mer'], 1, '.', '')." %" ?? NULL;
+                $mer = number_format((float)$entry['mer'], 1, '.', '')." %" ?? NULL;
             } else {
                 $mer = "&ndash;&nbsp;&nbsp;&nbsp;";
             }
