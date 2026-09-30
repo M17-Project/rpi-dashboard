@@ -47,12 +47,15 @@ data.forEach(e=>{
 let rc = e.src ? e.src.replace(/[^A-Za-z0-9].*$/, '') : '';
 let iface = e.type === 'RF' ? 'RF' : 'Internet';
 
-// Bit error rate before error correction, in %. Clean links read under
-// 0.5%; around 2% packets start to be lost.
+// Bit error rate before error correction, in %. The colors are set for
+// packets, which are lost whole if one frame fails: clean under 0.3%,
+// occasional losses up to 1.5%, many above. Voice tolerates more, since a
+// bad frame is only a brief glitch, so orange or red on voice means
+// marginal rather than broken.
 let ber = '<td></td>';
 if (iface === 'RF' && Number.isFinite(parseFloat(e.mer))) {
   let v = parseFloat(e.mer);
-  let c = v < 0.5 ? 'mer-good' : v < 2 ? 'mer-warn' : 'mer-bad';
+  let c = v < 0.3 ? 'mer-good' : v < 1.5 ? 'mer-warn' : 'mer-bad';
   ber = `<td class="${c}">${v.toFixed(1)} %</td>`;
 }
 
