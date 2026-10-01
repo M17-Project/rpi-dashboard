@@ -24,7 +24,7 @@ $rxfreq = number_format($gateway_config['Radio']['RXFrequency']/1000000,3);
 <div class="table-card"><table id="lastheard">
 <thead><tr>
 <th>Time</th><th>Source</th><th>Destination</th><th>Interface</th>
-<th>Type</th><th>CAN</th><th>MER</th><th>Duration</th>
+<th>Type</th><th>CAN</th><th title="Bit error rate before error correction">BER</th><th>Duration</th>
 </tr></thead><tbody></tbody></table></div>
 <script>
 function updateStatus(){fetch('get_status.php').then(r=>r.json()).then(d=>{
@@ -47,11 +47,16 @@ data.forEach(e=>{
 let rc = e.src ? e.src.replace(/[^A-Za-z0-9].*$/, '') : '';
 let iface = e.type === 'RF' ? 'RF' : 'Internet';
 
-let mer = '<td></td>';
+// Bit error rate before error correction, in %. The colors are set for
+// packets, which are lost whole if one frame fails: clean under 0.3%,
+// occasional losses up to 1.5%, many above. Voice tolerates more, since a
+// bad frame is only a brief glitch, so orange or red on voice means
+// marginal rather than broken.
+let ber = '<td></td>';
 if (iface === 'RF' && Number.isFinite(parseFloat(e.mer))) {
   let v = parseFloat(e.mer);
-  let c = v < 5 ? 'mer-good' : v < 10 ? 'mer-warn' : 'mer-bad';
-  mer = `<td class="${c}">${v.toFixed(1)} %</td>`;
+  let c = v < 0.3 ? 'mer-good' : v < 1.5 ? 'mer-warn' : 'mer-bad';
+  ber = `<td class="${c}">${v.toFixed(1)} %</td>`;
 }
 
 if (e.subtype === 'Packet') {
@@ -62,7 +67,7 @@ if (e.subtype === 'Packet') {
     <td>${iface}</td>
     <td>Packet</td>
     <td>${e.can ?? ''}</td>
-    ${mer}
+    ${ber}
 	<td></td>
   </tr>`);
   return;
@@ -75,7 +80,7 @@ b.append(`<tr>
   <td>${iface}</td>
   <td>${e.subtype || ''}</td>
   <td>${e.can ?? ''}</td>
-  ${mer}
+  ${ber}
   <td>${e.duration || ''}</td>
 </tr>`);
 });
