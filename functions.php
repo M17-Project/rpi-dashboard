@@ -1,9 +1,14 @@
 <?php
-session_start();
+// Shared bootstrap for every page and endpoint. It loads the dashboard
+// configuration and provides helpers. It does not start a session: only the
+// admin pages need one (see auth.php), and keeping sessions out of the
+// polling endpoints means they never block each other on the session lock.
+
+chdir(__DIR__);
 
 define('DASHBOARD_VERSION', trim(@file_get_contents(__DIR__ . '/VERSION')) ?: 'dev');
 
-$configFile = 'config.php';
+$configFile = __DIR__ . '/config.php';
 
 $defaultConfig = [
     'gateway_log_file' => 'files/dashboard.log',
@@ -11,23 +16,34 @@ $defaultConfig = [
     'hostfile' => 'files/M17Hosts.txt',
     'override_hostfile' => 'files/OverrideHosts.txt',
     'maxlines' => '15',
-	'sms_max' => '20',
+    'sms_max' => '20',
     'timezone' => 'UTC',
     'unit_system' => 'metric',
-    'map_marker_ttl' => '43200',
+    'map_marker_ttl' => '43200',    // minutes
+    'admin_password_hash' => '',
 ];
 
-if (!isset($_SESSION['radio_status'])) {
-    $_SESSION['radio_status'] = 'Listening';
+// Only these paths may be used for the gateway files. A path from the
+// configuration is used only if it is one of these, so the admin form cannot
+// point the dashboard at arbitrary files to read or overwrite.
+const ALLOWED_GATEWAY_FILES = [
+    'gateway_log_file' => ['files/dashboard.log', '/opt/m17/m17-gateway/dashboard.log'],
+    'gateway_config_file' => ['files/m17-gateway.ini', '/etc/m17-gateway.ini'],
+];
+
+function saveConfig($config) {
+    global $configFile;
+    $ok = file_put_contents($configFile, "<?php\nreturn " . var_export($config, true) . ";\n", LOCK_EX) !== false;
+    if ($ok && function_exists('opcache_invalidate')) opcache_invalidate($configFile, true);
+    return $ok;
 }
 
-// Create the config file if it doesn't exist
-if (!file_exists($configFile)) {
-    file_put_contents($configFile, "<?php\nreturn " . var_export($defaultConfig, true) . ";\n");
+$config = file_exists($configFile) ? (include $configFile) : null;
+if (!is_array($config)) {
+    // Missing or empty config.php (e.g. pre-created by the installer)
     $config = $defaultConfig;
+    saveConfig($config);
 } else {
-    $config = include $configFile;
-
     // Add missing keys with default values
     $updated = false;
     foreach ($defaultConfig as $key => $value) {
@@ -36,59 +52,110 @@ if (!file_exists($configFile)) {
             $updated = true;
         }
     }
+    if ($updated) saveConfig($config);
+}
 
-    // If updates were made, rewrite the config file
-    if ($updated) {
-        file_put_contents($configFile, "<?php\nreturn " . var_export($config, true) . ";\n");
+// Fall back to the default for any gateway path that is not allowed, so an
+// old or tampered config.php cannot be used either.
+foreach (ALLOWED_GATEWAY_FILES as $key => $allowed) {
+    if (!in_array($config[$key], $allowed, true)) {
+        $config[$key] = $defaultConfig[$key];
     }
 }
 
+$config['maxlines'] = max(1, min(500, (int)$config['maxlines']));
+$config['sms_max'] = max(1, min(500, (int)$config['sms_max']));
+$config['map_marker_ttl'] = max(1, (int)$config['map_marker_ttl']);
+if (!in_array($config['timezone'], DateTimeZone::listIdentifiers(), true)) $config['timezone'] = 'UTC';
+if (!in_array($config['unit_system'], ['metric', 'imperial'], true)) $config['unit_system'] = 'metric';
 
-// just read the latest 50 lines from the logfile
-// while not touching the rest of the file
-function tailFile($filePath, $lines = 50) {
-    $f = fopen($filePath, "r");
-    if (!$f) return false;
+date_default_timezone_set($config['timezone']);
 
-    $buffer = '';
-    $chunkSize = 4096; // Read 4KB at a time
-    $pos = -1;
-    $lineCount = 0;
-    $fileSize = filesize($filePath);
+// HTML escaping shorthand
+function h($s) {
+    return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
 
-    if ($fileSize === 0) {
-        fclose($f);
-        return [];
+// Parse a log timestamp and convert it to the configured timezone. The
+// gateway writes RFC 3339 times with its own UTC offset, which DateTime keeps
+// unless told otherwise.
+function logTime($s) {
+    try {
+        $dt = new DateTime((string)$s);
+    } catch (Exception $e) {
+        return null;
     }
+    $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
+    return $dt;
+}
 
-    fseek($f, 0, SEEK_END);
+// Yield the lines of a file from last to first, reading backwards in chunks,
+// so the whole file is never loaded. Stops after $maxBytes have been read.
+function reverseLines($filePath, $maxBytes = PHP_INT_MAX) {
+    $f = @fopen($filePath, 'r');
+    if (!$f) return;
+    $size = fstat($f)['size'];
+    $pos = $size;
+    $read = 0;
+    $rest = '';
+    $chunkSize = 8192;
+    $first = true;
 
-    while (ftell($f) > 0 && $lineCount <= $lines) {
-        $readSize = ($fileSize - abs($pos) < $chunkSize) ? $fileSize - abs($pos) : $chunkSize;
+    while ($pos > 0 && $read < $maxBytes) {
+        $len = min($chunkSize, $pos);
+        $pos -= $len;
+        $read += $len;
+        fseek($f, $pos);
+        $data = fread($f, $len);
+        if ($data === false) break;
 
-        // Ensure readSize is never zero or negative
-        if ($readSize <= 0) {
-            break;
+        $parts = explode("\n", $data . $rest);
+        // The first element may be the tail of an earlier line
+        $rest = array_shift($parts);
+        if ($first) {
+            // Drop the empty element after a trailing newline
+            if (end($parts) === '') array_pop($parts);
+            $first = false;
         }
-
-        $pos -= $readSize;
-        fseek($f, $pos, SEEK_END);
-        $data = fread($f, $readSize);
-
-        if ($data === false) {
-            break;  // Stop on fread failure
-        }
-
-        $buffer = $data . $buffer;
-        $lineCount = substr_count($buffer, "\n");
-
-        if (abs($pos) >= $fileSize) {
-            break;  // Stop if we've reached the beginning of the file
+        for ($i = count($parts) - 1; $i >= 0; $i--) {
+            yield $parts[$i];
         }
     }
-
+    // $rest is the first line of the file, if we got that far
+    if ($pos === 0 && $size > 0) yield $rest;
     fclose($f);
+}
 
-    $linesArray = explode("\n", $buffer);
-    return array_slice($linesArray, -$lines);
+// Return the last $lines lines of a file, oldest first
+function tailFile($filePath, $lines = 50) {
+    $out = [];
+    foreach (reverseLines($filePath) as $line) {
+        $out[] = $line;
+        if (count($out) >= $lines) break;
+    }
+    return array_reverse($out);
+}
+
+// Decode the last $lines entries of the gateway log, oldest first
+function readLogEntries($logFile, $lines) {
+    $entries = [];
+    foreach (tailFile($logFile, $lines) as $line) {
+        $e = json_decode($line, true);
+        if (is_array($e) && isset($e['time'], $e['type'], $e['subtype'])) {
+            $entries[] = $e;
+        }
+    }
+    return $entries;
+}
+
+// m17-gateway package version, cached until dpkg's database changes
+function gatewayVersion() {
+    $cache = __DIR__ . '/files/gateway_version.cache';
+    $status = '/var/lib/dpkg/status';
+    if (is_file($cache) && @filemtime($cache) >= @filemtime($status)) {
+        return trim(file_get_contents($cache));
+    }
+    $v = trim((string)shell_exec("dpkg-query -W -f='\${Version}' m17-gateway 2>/dev/null"));
+    @file_put_contents($cache, $v);
+    return $v;
 }

@@ -1,76 +1,95 @@
 <?php
 include 'functions.php';
+include 'auth.php';
+requireAdmin();
 
-// Load config
-$gateway_config = parse_ini_file($config['gateway_config_file'], true, INI_SCANNER_RAW);
+$iniFile = $config['gateway_config_file'];
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $updated = $gateway_config;
+// Read the INI file line by line, keeping comments, blank lines and order,
+// so saving only changes the values that were edited.
+// Returns [lines, fields] where fields maps "Section__Key" to
+// [section, key, value, line index].
+function readIni($file) {
+    $lines = @file($file, FILE_IGNORE_NEW_LINES);
+    if ($lines === false) return [null, []];
+    $fields = [];
+    $section = '';
+    foreach ($lines as $i => $line) {
+        if (preg_match('/^\s*\[([^\]]+)\]\s*$/', $line, $m)) {
+            $section = trim($m[1]);
+        } else if (preg_match('/^\s*([^=;#\s][^=]*?)\s*=\s*(.*?)\s*$/', $line, $m)) {
+            $fields[$section . '__' . $m[1]] = [$section, $m[1], $m[2], $i];
+        }
+    }
+    return [$lines, $fields];
+}
 
-    foreach ($_POST as $key => $value) {
-        // Skip non-config fields (e.g., submit buttons)
-        if (in_array($key, ['save', 'save_restart'])) {
+// A value is written verbatim, so it must not contain anything that would
+// change how the line is parsed: line breaks or other control characters,
+// comment markers or quotes.
+function validIniValue($v) {
+    return !preg_match('/[\x00-\x1f\x7f;#"`\\\\]/', $v);
+}
+
+[$lines, $fields] = readIni($iniFile);
+$message = '';
+$errors = [];
+
+if ($lines !== null && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $changed = false;
+    // Only keys that already exist in the file can be changed
+    foreach ($fields as $name => [$section, $key, $old, $i]) {
+        // PHP turns spaces and dots in POST names into underscores
+        $postName = str_replace([' ', '.'], '_', $name);
+        if (!isset($_POST[$postName]) || !is_string($_POST[$postName])) continue;
+        $value = trim($_POST[$postName]);
+        if ($value === $old) continue;
+        if (!validIniValue($value)) {
+            $errors[] = "$section / $key: line breaks, quotes, backslashes, ';' and '#' are not allowed.";
             continue;
         }
+        $lines[$i] = preg_replace('/^(\s*[^=]*?\s*=\s*).*$/', '${1}', $lines[$i]) . $value;
+        $changed = true;
+    }
 
-        // Match "Section__Key" format using regex
-        if (preg_match('/^([a-zA-Z0-9_]+)__(.+)$/', $key, $matches)) {
-            $section = $matches[1];
-            $item    = $matches[2];
-
-            if (!isset($updated[$section])) {
-                $updated[$section] = [];
-            }
-
-            // Store value as-is (raw), but strip newlines
-            $value = str_replace(["\r", "\n"], ' ', $value);
-            $updated[$section][$item] = $value;
+    if (!$errors && $changed) {
+        $content = implode("\n", $lines) . "\n";
+        // The file is a symlink into /etc, so it can't be replaced atomically
+        // with rename(); at least check that everything was written.
+        if (file_put_contents($iniFile, $content, LOCK_EX) !== strlen($content)) {
+            $errors[] = 'Could not write the gateway configuration file.';
+        } else {
+            $message = 'Configuration saved.';
         }
     }
 
-    // Write updated configuration back to the INI file
-    $content = '';
-    foreach ($updated as $section => $pairs) {
-        $content .= '[' . $section . "]\n";
-        foreach ($pairs as $k => $v) {
-            $content .= $k . ' = ' . $v . "\n";
-        }
-        $content .= "\n";
+    if (!$errors && isset($_POST['save_restart'])) {
+        shell_exec('systemctl restart m17-gateway.service 2>&1');
+        $message .= ' Gateway restarted.';
     }
 
-    file_put_contents($config['gateway_config_file'], $content);
-
-    // Optionally restart the gateway service
-    if (isset($_POST['save_restart'])) {
-        @shell_exec('systemctl restart m17-gateway');
-    }
-
-    // Reload config for display
-    $gateway_config = parse_ini_file($config['gateway_config_file'], true, INI_SCANNER_RAW);
+    [$lines, $fields] = readIni($iniFile);
 }
 
 $page = 'config_gw';
 include 'header.php';
 ?>
 <div class="page-content">
+  <?php if ($message): ?><div class="card"><p><?= h($message) ?></p></div><?php endif; ?>
+  <?php if ($errors): ?><div class="card"><?php foreach ($errors as $e): ?><p class="status-bad"><?= h($e) ?></p><?php endforeach; ?></div><?php endif; ?>
   <div class="card">
     <h2>Gateway configuration</h2>
-
+    <?php if ($lines === null): ?>
+    <p class="status-bad">Cannot read <?= h($iniFile) ?>.</p>
+    <?php else: ?>
     <form method="POST">
+      <?= csrfField() ?>
       <div class="form-grid-2col">
-        <?php foreach ($gateway_config as $section => $pairs): ?>
-          <?php foreach ($pairs as $key => $val): ?>
-            <div class="form-field">
-              <label><?php echo htmlspecialchars($section . ' / ' . $key); ?></label>
-              <input
-                class="input"
-                type="text"
-                name="<?php echo htmlspecialchars($section . '__' . $key); ?>"
-                value="<?php echo htmlspecialchars($val); ?>"
-              >
-            </div>
-          <?php endforeach; ?>
+        <?php foreach ($fields as $name => [$section, $key, $val]): ?>
+          <div class="form-field">
+            <label><?= h($section . ' / ' . $key) ?></label>
+            <input class="input" type="text" name="<?= h($name) ?>" value="<?= h($val) ?>">
+          </div>
         <?php endforeach; ?>
       </div>
 
@@ -79,6 +98,7 @@ include 'header.php';
         <button type="submit" name="save_restart" class="btn-primary">Save &amp; Restart</button>
       </div>
     </form>
+    <?php endif; ?>
   </div>
 </div>
 <?php include 'footer.php'; ?>

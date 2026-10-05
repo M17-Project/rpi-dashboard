@@ -3,3 +3,4 @@ files/*.log
 files/*.txt
 *.bak
 config.php
+files/*.cache

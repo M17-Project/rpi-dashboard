@@ -21,6 +21,7 @@ $page = $page ?? '';
 
 <link rel="stylesheet" href="style.css">
 <script src="theme.js"></script>
+<script src="common.js"></script>
 <script src="jquery-3.7.1.min.js"></script>
 <link rel="icon" type="image/png" href="img/favicon.png">
 
@@ -36,6 +37,9 @@ $page = $page ?? '';
     <a href="config_dashboard.php" class="<?php echo ($page=='config_dash')?'active':'';?>"><span class="icon">🧩</span>Dashboard config</a>
     <a href="messages.php" class="<?php echo ($page=='messages')?'active':'';?>"><span class="icon">💬</span>Text messages</a>
     <a href="help.php" class="<?php echo ($page=='help')?'active':'';?>"><span class="icon">❓</span>Help</a>
+    <?php if (function_exists('isAdmin') && isAdmin()): ?>
+    <a href="login.php?logout=1"><span class="icon">🔒</span>Log out</a>
+    <?php endif; ?>
   
     <div class="sidebar-theme">
       <div class="theme-slider" onclick="toggleTheme()">

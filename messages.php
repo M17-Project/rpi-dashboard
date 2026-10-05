@@ -1,7 +1,6 @@
 <?php
+include 'functions.php';
 $page='messages'; include 'header.php';
-$cfg=include 'config.php';
-$sms_max = $cfg['sms_max'] ?? 20;
 ?>
 <h2>Text messages</h2>
 <div class="table-card">
@@ -11,29 +10,22 @@ $sms_max = $cfg['sms_max'] ?? 20;
 </table>
 </div>
 <script>
-var sms_max = <?php echo $sms_max; ?>;
+// Message text comes from RF and from the reflector: always escape it
 function updateSMS(){
- $.getJSON('get_lastheard.php', data=>{
+ $.getJSON('get_lastheard.php?view=sms', data=>{
    if(!Array.isArray(data)) return;
    let rows='';
-   let msgs=[];
    data.forEach(e=>{
-     if(e.subtype==='Packet' && e.smsMessage){
-       msgs.push(e);
-     }
-   });
-   msgs = msgs.slice(0, sms_max);
-   msgs.forEach(e=>{
      rows += `<tr>
-       <td>${e.time||''}</td>
-       <td>${e.src||''}</td>
-       <td>${e.dst||''}</td>
-       <td>${e.smsMessage||''}</td>
+       <td>${esc(e.time)}</td>
+       <td>${qrzLink(e.src)}</td>
+       <td>${esc(e.dst)}</td>
+       <td>${esc(e.smsMessage)}</td>
      </tr>`;
    });
    $('#sms tbody').html(rows);
  });
 }
-$(function(){updateSMS(); setInterval(updateSMS,1000);});
+$(function(){updateSMS(); setInterval(updateSMS,2000);});
 </script>
 <?php include 'footer.php'; ?>

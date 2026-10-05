@@ -1,4 +1,5 @@
 <?php
+include 'functions.php';
 $page = 'map';
 include 'header.php';
 ?>
@@ -9,8 +10,10 @@ include 'header.php';
   </section>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <script>
 const markers = {};
@@ -25,8 +28,9 @@ const smallIcon = L.icon({
 });
 
 var map = L.map('map').setView([20,0], 2);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 18
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18,
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
 }).addTo(map);
 
 const markersLayer = L.layerGroup().addTo(map);
@@ -36,6 +40,7 @@ function updateMap() {
     .then(r => r.json())
     .then(data => {
       if (!Array.isArray(data)) return;
+      const seen = new Set();
 
       data.forEach(p => {
         const lat = Number(p.lat);
@@ -43,19 +48,28 @@ function updateMap() {
         if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
 
         const key = p.callsign || `${lat},${lon}`;
+        seen.add(key);
 
+        // p.location is built and escaped by get_coordinates.php
         if (markers[key]) {
-          // update position + popup text
           markers[key].setLatLng([lat, lon]);
           markers[key].setPopupContent(p.location || '');
         } else {
-          // create new marker
           markers[key] = L.marker([lat, lon], { icon: smallIcon })
-            .addTo(map)
+            .addTo(markersLayer)
             .bindPopup(p.location || '');
         }
       });
-    });
+
+      // Remove stations whose last position is older than the marker TTL
+      Object.keys(markers).forEach(key => {
+        if (!seen.has(key)) {
+          markersLayer.removeLayer(markers[key]);
+          delete markers[key];
+        }
+      });
+    })
+    .catch(() => {});
 }
 
 updateMap();

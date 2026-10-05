@@ -11,7 +11,7 @@ It pairs with the `m17-gateway` backend to provide real‑time status, logs, and
 
 - Displays **live logs** and status (connectivity, frequency, TX power, etc.)
 - Simple **service control** for `m17-gateway` (start/stop/restart)
-- Simple admin backend
+- Simple password-protected admin backend
 
 The UI retrieves data by reading a JSON logfile produced by the m17-gateway.
 
@@ -48,6 +48,11 @@ server {
 
         location / {
                 try_files $uri $uri/ =404;
+        }
+
+        # The dashboard reads these files itself; don't serve them
+        location ^~ /files/ {
+                deny all;
         }
 
         location ~ \.php$ {
@@ -99,6 +104,12 @@ $ ls -l /opt/m17/m17-gateway/dashboard.log
 
 $ ls -l /etc/m17-gateway.ini
 -rw-rw-r-- 1 m17-gateway m17-gateway-control 400 Jul 28 23:00 /etc/m17-gateway.ini
+```
+
+Set the admin password, which protects the configuration pages:
+
+```
+sudo -u www-data php /opt/m17/rpi-dashboard/set_password.php
 ```
 
 Now navigate to the admin section of the rpi-dashboard and configure it as following:
