@@ -1,5 +1,6 @@
 
 :root {
+  --footer-height:32px;
   --mint: #73d7af;
   --bg-dark: #0f1115;
   --bg-elev: #1a1d21;
@@ -64,7 +65,8 @@ body {
 
 /* Main content */
 
-.main { margin-left: 230px; padding: 20px; }
+/* Bottom padding keeps the last element clear of the fixed footer */
+.main { margin-left: 230px; padding: 20px 20px calc(var(--footer-height) + 24px); }
 
 /* Cards */
 
@@ -148,7 +150,7 @@ td.mer-bad  { color:#ef4444; font-weight:600; }
   left:230px;
   right:0;
   bottom:0;
-  height:32px;
+  height:var(--footer-height);
   background:rgba(0,0,0,1);
   border-top:1px solid var(--border);
   color:var(--text-muted);
