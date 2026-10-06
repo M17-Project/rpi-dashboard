@@ -68,6 +68,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['device_command'])) {
+    // Needs a polkit rule allowing www-data to reboot and power off.
+    // systemctl returns as soon as the shutdown has been queued, so this page
+    // is still sent before nginx stops.
+    $deviceCommands = [
+        'reboot' => ['systemctl reboot 2>&1', 'The hotspot is rebooting. This page will work again in about a minute.'],
+        'poweroff' => ['systemctl poweroff 2>&1', 'The hotspot is shutting down. Wait until the green activity LED on the Raspberry Pi has stopped blinking before you unplug it.'],
+    ];
+    $cmd = $_POST['device_command'];
+    if (is_string($cmd) && isset($deviceCommands[$cmd])) {
+        exec($deviceCommands[$cmd][0], $out, $rc);
+        if ($rc === 0) {
+            $message = $deviceCommands[$cmd][1];
+        } else {
+            $error = 'The command failed. Does the web server have permission to ' . ($cmd === 'reboot' ? 'reboot' : 'shut down') . ' the system?';
+            $commandOutput = implode("\n", $out);
+        }
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['run_command'])) {
     // Fixed commands only; nothing from the request reaches a shell
     $services = [
@@ -103,7 +123,7 @@ function pathSelect($name, $config) {
 <?php if ($message): ?><div class="card"><p><?= h($message) ?></p></div><?php endif; ?>
 <?php if ($error): ?><div class="card"><p class="status-bad"><?= h($error) ?></p></div><?php endif; ?>
 <div class="card">
-<h2>Dashboard configuration</h2>
+<h2>Dashboard settings</h2>
 <form method="post">
 <?= csrfField() ?>
 <div class="form-grid-2col">
@@ -142,6 +162,18 @@ function pathSelect($name, $config) {
 <button class="btn-secondary" name="run_command" value="log">Show log</button>
 <button class="btn-secondary" name="run_command" value="showhostfile">Show hostfile</button>
 <button class="btn-secondary" name="run_command" value="updatehostfile">Update hostfile</button>
+</div>
+</div>
+</form>
+</div>
+<div class="card">
+<h2>Device control</h2>
+<form method="post">
+<?= csrfField() ?>
+<div class="form-grid-2col">
+<div class="form-field"><label>Raspberry Pi</label><br>
+<button class="btn-secondary" name="device_command" value="reboot" onclick="return confirm('Reboot the hotspot now?')">Reboot</button>
+<button class="btn-secondary" name="device_command" value="poweroff" onclick="return confirm('Shut down the hotspot now? You will have to unplug and reconnect the power to start it again.')">Shut down</button>
 </div>
 </div>
 </form>

@@ -2,7 +2,7 @@
 include 'functions.php';
 $page='messages'; include 'header.php';
 ?>
-<h2>Text messages</h2>
+<h2>Messaging</h2>
 <div class="table-card">
 <table id="sms">
 <thead><tr><th>Time</th><th>From</th><th>To</th><th>Message</th></tr></thead>

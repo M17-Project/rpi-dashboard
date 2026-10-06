@@ -112,9 +112,9 @@ Set the admin password, which protects the configuration pages:
 sudo -u www-data php /opt/m17/rpi-dashboard/set_password.php
 ```
 
-Now navigate to the admin section of the rpi-dashboard and configure it as following:
+Now open the **Settings** page of the rpi-dashboard and configure it as following:
 
 - M17 Gateway Log File: files/dashboard.log
 - M17 Gateway Configuration File: files/m17-gateway.ini
 
-Also don't forget to update the M17 hosts file via the button in the admin interface.
+Also don't forget to update the M17 hosts file via the button on the same page.

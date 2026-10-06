@@ -33,9 +33,9 @@ $page = $page ?? '';
 
     <a href="index.php" class="<?php echo ($page=='dashboard')?'active':'';?>"><span class="icon">🏠</span>Dashboard</a>
     <a href="map.php" class="<?php echo ($page=='map')?'active':'';?>"><span class="icon">🗺️</span>Map</a>
-    <a href="config_gateway.php" class="<?php echo ($page=='config_gw')?'active':'';?>"><span class="icon">⚙️</span>Gateway config</a>
-    <a href="config_dashboard.php" class="<?php echo ($page=='config_dash')?'active':'';?>"><span class="icon">🧩</span>Dashboard config</a>
-    <a href="messages.php" class="<?php echo ($page=='messages')?'active':'';?>"><span class="icon">💬</span>Text messages</a>
+    <a href="config_gateway.php" class="<?php echo ($page=='config_gw')?'active':'';?>"><span class="icon">⚙️</span>Gateway</a>
+    <a href="config_dashboard.php" class="<?php echo ($page=='config_dash')?'active':'';?>"><span class="icon">🧩</span>Settings</a>
+    <a href="messages.php" class="<?php echo ($page=='messages')?'active':'';?>"><span class="icon">💬</span>Messaging</a>
     <a href="help.php" class="<?php echo ($page=='help')?'active':'';?>"><span class="icon">❓</span>Help</a>
     <?php if (function_exists('isAdmin') && isAdmin()): ?>
     <a href="login.php?logout=1"><span class="icon">🔒</span>Log out</a>
