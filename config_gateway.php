@@ -33,6 +33,14 @@ function validIniValue($v) {
 
 [$lines, $fields] = readIni($iniFile);
 $message = '';
+
+// These settings get a list of the system's sound devices instead of a text
+// field, so nobody has to know the format m17-gateway expects
+$alsaFields = [
+    'Modem__ALSACaptureDevice' => 'record',
+    'Modem__ALSAPlaybackDevice' => 'play',
+];
+$alsaDevices = alsaDevices();
 $errors = [];
 
 if ($lines !== null && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -88,7 +96,27 @@ include 'header.php';
         <?php foreach ($fields as $name => [$section, $key, $val]): ?>
           <div class="form-field">
             <label><?= h($section . ' / ' . $key) ?></label>
+            <?php if (isset($alsaFields[$name])): ?>
+            <select class="input" name="<?= h($name) ?>">
+              <option value=""<?= $val === '' ? ' selected' : '' ?>>Automatic (recommended)</option>
+              <?php $found = ($val === ''); ?>
+              <?php foreach ($alsaDevices as $d):
+                  if (!$d[$alsaFields[$name]]) continue;
+                  // The current setting may also be a device path or hw:CARD,DEVICE;
+                  // saving then stores the name, which doesn't change between boots
+                  $hw = 'hw:' . $d['card'] . ',' . $d['device'];
+                  $path = '/dev/snd/pcmC' . $d['card'] . 'D' . $d['device'] . ($alsaFields[$name] === 'play' ? 'p' : 'c');
+                  $selected = in_array($val, [$d['name'], $hw, $path], true);
+                  $found = $found || $selected; ?>
+              <option value="<?= h($d['name']) ?>"<?= $selected ? ' selected' : '' ?>><?= h($d['card_name'] . ': ' . $d['name'] . ' (' . $hw . ')') ?></option>
+              <?php endforeach; ?>
+              <?php if (!$found): ?>
+              <option value="<?= h($val) ?>" selected><?= h($val) ?> (current setting, not found)</option>
+              <?php endif; ?>
+            </select>
+            <?php else: ?>
             <input class="input" type="text" name="<?= h($name) ?>" value="<?= h($val) ?>">
+            <?php endif; ?>
           </div>
         <?php endforeach; ?>
       </div>

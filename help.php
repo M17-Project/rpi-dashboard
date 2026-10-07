@@ -33,25 +33,25 @@ include 'header.php';
     <ul>
         <li><b>General - Callsign:</b> most likely the owners call sign plus an H for Hotspot</li>
         <li><b>General - DashboardLog:</b> The full path to where m17-gateway will write its log file (default: /opt/m17/m17-gateway/dashboard.log)</li>
-        <li><b>Radio - RXFrequency:</b> Set here the RX frequency of your hotspot</li>
-        <li><b>Radio - TXFrequency:</b> Set here the TX frequency of your hotspot</li>
-        <li><b>Radio - Power:</b> Set here the desired output power of your hotspot (default: 10)</li>
-        <li><b>Radio - AFC:</b> Enable/disable the automatic frequency correction feature for your hotspot (default: 0)</li>
-        <li><b>Radio - FrequencyCorr:</b> Manual frequency correction if your hotspot is not perfectly on frequency (default: 0, can be postive or negative)</li>
+        <li><b>Radio - RXFrequency:</b> The receive frequency of your hotspot, in Hz</li>
+        <li><b>Radio - TXFrequency:</b> The transmit frequency of your hotspot, in Hz</li>
+        <li><b>Radio - Power:</b> The output power of your hotspot, in dBm (default: 10)</li>
+        <li><b>Radio - AFC:</b> Enable/disable the automatic frequency correction (default: true)</li>
+        <li><b>Radio - FrequencyCorr:</b> Manual frequency correction if your hotspot is not exactly on frequency (default: 0, can be positive or negative)</li>
         <li><b>Radio - Duplex:</b> Defines if a simplex or duplex hotspot is used (default: false)</li>
-        <li><b>Reflector - HostFile:</b> Location of the M17 host file. This file contains all the M17 reflectors with their IP addresses and ports (default: /opt/m17/m17-gateway/M17Hosts.txt)</li>
-        <li><b>Reflector - OverrideHostFile:</b> Location of the M17 host override file. Use this fiel to add custom reflectors that are not in the official host file. (default: /opt/m17/m17-gateway/OverrideHosts.txt)</li>
-        <li><b>Reflector - Name:</b> Drop down box including all M17 reflectors. Use this to set the reflector you want to connect to. (default: M-17-M17)</li>
-        <li><b>Reflector - Module:</b> Drop down box including all possible modules. Use this to set the module you want to connect to. (default: C)</li>
-        <li><b>Reflector - Level:</b> The log level for the m17-gateway. Impacts the verbosity but also the size of the file. (default: DEBUG)</li>
-        <li><b>Reflector - Port:</b> The serial port/device which the m17-gateway uses to connect to the CC1200 hat (default: /dev/ttyAMA0)</li>
-        <li><b>Reflector - Speed:</b> Baud rate used for the serial connection to the CC1200 hat (default: 460800)</li>
-        <li><b>Reflector - NRSTPin:</b> (default: 21)</li>
-        <li><b>Reflector - PAEnablePin:</b> (default: 18)</li>
-        <li><b>Reflector - Boot0Pin:</b> (default: 20)</li>
+        <li><b>Reflector - HostFile:</b> Location of the M17 host file, which lists all M17 reflectors with their addresses and ports. The installer points it to the dashboard's copy, which the "Update hostfile" button on the Settings page refreshes (default: /opt/m17/rpi-dashboard/files/M17Hosts.txt)</li>
+        <li><b>Reflector - OverrideHostFile:</b> Location of the M17 host override file. Use this file to add custom reflectors that are not in the official host file (default: /opt/m17/rpi-dashboard/files/OverrideHosts.txt)</li>
+        <li><b>Reflector - Name:</b> The reflector you want to connect to. Leave it empty to run without a reflector, RF only (default: M17-M17)</li>
+        <li><b>Reflector - Module:</b> The reflector module you want to connect to (default: C)</li>
+        <li><b>Log - Level:</b> The log level of m17-gateway: ERROR, INFO or DEBUG. Affects the detail but also the size of the log (default: DEBUG)</li>
+        <li><b>Modem - Type:</b> The HAT type: cc1200, sx1255 or mmdvm. The installer sets it to match the HAT you select</li>
+        <li><b>Modem - Port:</b> CC1200 and MMDVM HATs. The serial port m17-gateway uses to talk to the HAT (default: /dev/ttyAMA0)</li>
+        <li><b>Modem - Speed:</b> CC1200 and MMDVM HATs. Baud rate of the serial connection (default: 460800 for CC1200, typically 115200 or 460800 for MMDVM)</li>
+        <li><b>Modem - NRSTPin / Boot0Pin:</b> CC1200 HATs only. GPIO pins used to reset the HAT and to start its bootloader (default: 21 and 20)</li>
+        <li><b>Modem - ALSACaptureDevice / ALSAPlaybackDevice:</b> SX1255 HATs only. The sound devices for receiving and transmitting, chosen from a list of the devices found on the Raspberry Pi. "Automatic" lets m17-gateway find the SX1255 itself, which normally works (default: Automatic)</li>
     </ul>
     <p>
-        Please note that all fields on this page are extracted from the gateway configuration file. If a new configuraation item will be added to the config file, it will show up here, too. If an item will be removed, it will disappear here.
+        Please note that all fields on this page are extracted from the gateway configuration file. If a new configuration item will be added to the config file, it will show up here, too. If an item will be removed, it will disappear here.
     </p>
 
     <h3>Admin Login</h3>

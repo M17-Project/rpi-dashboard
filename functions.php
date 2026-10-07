@@ -148,6 +148,37 @@ function readLogEntries($logFile, $lines) {
     return $entries;
 }
 
+// List the system's ALSA PCM devices from /proc/asound, which needs no special
+// permissions. Each entry has the card and device numbers, the device name
+// (what m17-gateway's ALSACaptureDevice / ALSAPlaybackDevice settings match),
+// the card's name, and whether it can play and record.
+function alsaDevices($pcmFile = '/proc/asound/pcm', $cardsFile = '/proc/asound/cards') {
+    $cardNames = [];
+    foreach (@file($cardsFile, FILE_IGNORE_NEW_LINES) ?: [] as $line) {
+        // " 1 [GenericStereoA]: simple-card - GenericStereoAudioCodec"
+        if (preg_match('/^\s*(\d+)\s+\[[^\]]*\]:\s*.*? - (.*)$/', $line, $m)) {
+            $cardNames[(int)$m[1]] = trim($m[2]);
+        }
+    }
+    $devices = [];
+    foreach (@file($pcmFile, FILE_IGNORE_NEW_LINES) ?: [] as $line) {
+        // "01-00: 3f203000.i2s-dir-hifi dir-hifi-0 : 3f203000.i2s-dir-hifi dir-hifi-0 : capture 1"
+        $parts = explode(' : ', $line);
+        if (count($parts) < 3 || !preg_match('/^(\d+)-(\d+):/', $parts[0], $m)) continue;
+        $streams = implode(' ', array_slice($parts, 2));
+        $card = (int)$m[1];
+        $devices[] = [
+            'card' => $card,
+            'device' => (int)$m[2],
+            'name' => trim($parts[1]),
+            'card_name' => $cardNames[$card] ?? "card $card",
+            'play' => strpos($streams, 'playback') !== false,
+            'record' => strpos($streams, 'capture') !== false,
+        ];
+    }
+    return $devices;
+}
+
 // m17-gateway package version, cached until dpkg's database changes
 function gatewayVersion() {
     $cache = __DIR__ . '/files/gateway_version.cache';
