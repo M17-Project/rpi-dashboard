@@ -179,6 +179,48 @@ function alsaDevices($pcmFile = '/proc/asound/pcm', $cardsFile = '/proc/asound/c
     return $devices;
 }
 
+// The modem's hardware and firmware ident, from the newest "Gateway" "Start"
+// event in the gateway log, on one line; '' if there is none (a gateway
+// without the event, or a modem that didn't answer).
+//
+// The event is written once per gateway start, so it can be far back in a
+// big log. The cache remembers the ident and how far the log has been read,
+// so each call reads only the lines added since; the whole log is read again
+// only if it was replaced or truncated.
+function modemIdent($logFile) {
+    $cacheFile = __DIR__ . '/files/modem_ident.cache';
+    clearstatcache(true, $logFile);
+    $st = @stat($logFile);
+    if (!$st) return '';
+
+    $cache = @json_decode((string)@file_get_contents($cacheFile), true);
+    $resume = is_array($cache)
+        && ($cache['inode'] ?? null) === $st['ino']
+        && is_int($cache['pos'] ?? null)
+        && $cache['pos'] <= $st['size'];
+    $ident = $resume ? (string)($cache['ident'] ?? '') : '';
+    $pos = $resume ? $cache['pos'] : 0;
+
+    if ($pos < $st['size'] && ($f = @fopen($logFile, 'r'))) {
+        fseek($f, $pos);
+        while (($line = fgets($f)) !== false) {
+            // A line still being written has no newline yet; read it next time
+            if (substr($line, -1) !== "\n") break;
+            $pos += strlen($line);
+            if (strpos($line, '"Gateway"') === false) continue;
+            $e = json_decode($line, true);
+            if (is_array($e) && ($e['type'] ?? '') === 'Gateway' && ($e['subtype'] ?? '') === 'Start') {
+                $ident = (string)($e['modemIdent'] ?? '');
+            }
+        }
+        fclose($f);
+        @file_put_contents($cacheFile, json_encode(['inode' => $st['ino'], 'pos' => $pos, 'ident' => $ident]), LOCK_EX);
+    }
+
+    // e.g. "CC1200-HAT 420-450 MHz\nFW v2.3 by ..." -> "CC1200-HAT 420-450 MHz · FW v2.3 by ..."
+    return (string)preg_replace('/\s*\R\s*/u', ' · ', trim($ident));
+}
+
 // m17-gateway package version, cached until dpkg's database changes
 function gatewayVersion() {
     $cache = __DIR__ . '/files/gateway_version.cache';

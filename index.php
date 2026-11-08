@@ -11,9 +11,11 @@ $rxfreq = freqMHz($gateway_config['Radio']['RXFrequency'] ?? null);
 $txfreq = freqMHz($gateway_config['Radio']['TXFrequency'] ?? null);
 $power = $gateway_config['Radio']['Power'] ?? '';
 $power = is_numeric($power) ? $power . ' dBm' : 'N/A';
+$hw = modemIdent($config['gateway_log_file']);
 ?>
 <div class="cards">
 <section class="card"><h2>Transceiver info</h2>
+<p>HW <strong><?= h($hw !== '' ? $hw : 'unknown') ?></strong></p>
 <p>RX frequency <strong><?= h($rxfreq) ?></strong></p>
 <p>TX frequency <strong><?= h($txfreq) ?></strong></p>
 <p>Power <strong><?= h($power) ?></strong></p>
