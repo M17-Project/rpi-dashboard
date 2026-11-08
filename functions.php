@@ -179,25 +179,28 @@ function alsaDevices($pcmFile = '/proc/asound/pcm', $cardsFile = '/proc/asound/c
     return $devices;
 }
 
-// The modem's hardware and firmware ident, from the newest "Gateway" "Start"
-// event in the gateway log, on one line; '' if there is none (a gateway
-// without the event, or a modem that didn't answer).
+// The modem from the newest "Gateway" "Start" event in the gateway log:
+// ['modem' => type from the gateway configuration, 'ident' => what the modem
+// reported, possibly several lines]. Both are '' if there is no such event
+// (an older gateway) and the ident is '' if the modem didn't answer.
 //
 // The event is written once per gateway start, so it can be far back in a
-// big log. The cache remembers the ident and how far the log has been read,
+// big log. The cache remembers the result and how far the log has been read,
 // so each call reads only the lines added since; the whole log is read again
 // only if it was replaced or truncated.
 function modemIdent($logFile) {
     $cacheFile = __DIR__ . '/files/modem_ident.cache';
     clearstatcache(true, $logFile);
     $st = @stat($logFile);
-    if (!$st) return '';
+    if (!$st) return ['modem' => '', 'ident' => ''];
 
     $cache = @json_decode((string)@file_get_contents($cacheFile), true);
     $resume = is_array($cache)
         && ($cache['inode'] ?? null) === $st['ino']
         && is_int($cache['pos'] ?? null)
-        && $cache['pos'] <= $st['size'];
+        && $cache['pos'] <= $st['size']
+        && is_string($cache['modem'] ?? null);   // caches from before 'modem' was kept are read again
+    $modem = $resume ? $cache['modem'] : '';
     $ident = $resume ? (string)($cache['ident'] ?? '') : '';
     $pos = $resume ? $cache['pos'] : 0;
 
@@ -210,15 +213,51 @@ function modemIdent($logFile) {
             if (strpos($line, '"Gateway"') === false) continue;
             $e = json_decode($line, true);
             if (is_array($e) && ($e['type'] ?? '') === 'Gateway' && ($e['subtype'] ?? '') === 'Start') {
+                $modem = (string)($e['modem'] ?? '');
                 $ident = (string)($e['modemIdent'] ?? '');
             }
         }
         fclose($f);
-        @file_put_contents($cacheFile, json_encode(['inode' => $st['ino'], 'pos' => $pos, 'ident' => $ident]), LOCK_EX);
+        @file_put_contents($cacheFile, json_encode(['inode' => $st['ino'], 'pos' => $pos, 'modem' => $modem, 'ident' => $ident]), LOCK_EX);
     }
 
-    // e.g. "CC1200-HAT 420-450 MHz\nFW v2.3 by ..." -> "CC1200-HAT 420-450 MHz · FW v2.3 by ..."
+    return ['modem' => $modem, 'ident' => trim($ident)];
+}
+
+// A modem ident on one line:
+// "CC1200-HAT 420-450 MHz\nFW v2.3 by ..." -> "CC1200-HAT 420-450 MHz · FW v2.3 by ..."
+function identOneLine($ident) {
     return (string)preg_replace('/\s*\R\s*/u', ' · ', trim($ident));
+}
+
+// The part of a modem ident that says which board it is and which firmware
+// version it runs, for places with little room. Formats this doesn't know
+// are returned whole, on one line.
+//   cc1200: "CC1200-HAT 420-450 MHz\nFW v2.3 by Wojciech SP5WWP" -> "CC1200-HAT 420-450 MHz · FW v2.3"
+//   mmdvm:  "MMDVM_HS_Dual_Hat-v1.6.1 20251011 14.7456MHz dual ADF7021 FW by CA6JAU GitID #403e47c"
+//           -> "MMDVM_HS_Dual_Hat-v1.6.1"
+//           "MMDVM 20220623 TCXO (D-Star/DMR/.../M17 GitID #...)" -> "MMDVM 20220623"
+function identShort($modem, $ident) {
+    $ident = trim($ident);
+    $lines = preg_split('/\R/u', $ident);
+    if ($modem === 'cc1200' || stripos($ident, 'CC1200') === 0) {
+        // First line names the board; the firmware version follows "FW"
+        if (preg_match('/\bFW\s+v?\d[\w.]*/u', $ident, $m)) {
+            return trim($lines[0]) === trim($m[0]) ? $m[0] : trim($lines[0]) . ' · ' . $m[0];
+        }
+        return trim($lines[0]);
+    }
+    if ($modem === 'mmdvm') {
+        // The first word is the board, usually with the version in it
+        // (MMDVM_HS, ZUMspot, ...); repeater boards say "MMDVM" and put the
+        // version, a date, in the second word
+        $words = preg_split('/\s+/u', $ident);
+        if (!preg_match('/\d/', $words[0]) && isset($words[1]) && preg_match('/^\d{8}$/', $words[1])) {
+            return $words[0] . ' ' . $words[1];
+        }
+        return $words[0];
+    }
+    return identOneLine($ident);
 }
 
 // m17-gateway package version, cached until dpkg's database changes
